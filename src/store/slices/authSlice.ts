@@ -1,0 +1,91 @@
+// import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+// import type { AuthState } from "../../interfaces/auth";
+
+// const initialState: AuthState = {
+//   user: null,
+//   loading: false,
+//   error: null,
+// };
+
+// const authSlice = createSlice({
+//   name: "auth",
+//   initialState,
+//   reducers: {
+//     signupStart(state) {
+//       state.loading = true;
+//       state.error = null;
+//     },
+//     signupSuccess(state) {
+//       state.loading = false;
+//       // state.user = action.payload;
+//     },
+//     // signupFailure(state, action: PayloadAction<string>) {
+//     //   state.loading = false;
+//     //   state.error = action.payload;
+//     // },
+//     loginStart(state) {
+//       state.loading = true;
+//       state.error = null;
+//     },
+//     loginSuccess(state, action: PayloadAction<string>) {
+//       state.loading = false;
+//       state.user = action.payload;
+//     },
+//   },
+// });
+
+// export const { signupStart, signupSuccess, loginStart, loginSuccess } =
+//   authSlice.actions;
+// export default authSlice.reducer;
+
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { AuthState, User } from "../../interfaces/auth";
+
+const savedUser = localStorage.getItem("user");
+const savedToken = localStorage.getItem("token");
+
+const initialState: AuthState = {
+  user: savedUser ? JSON.parse(savedUser) : null,
+  token: savedToken || null,
+  loading: false,
+  error: null,
+};
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    signupStart(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    signupSuccess(state) {
+      state.loading = false;
+      // state.user = action.payload;
+    },
+
+    loginStart(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    loginSuccess(state, action: PayloadAction<{ user: User; token: string }>) {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("token", action.payload.token);
+    },
+
+    logout(state) {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    },
+  },
+});
+
+export const { signupStart, signupSuccess, loginStart, loginSuccess, logout } =
+  authSlice.actions;
+export default authSlice.reducer;
