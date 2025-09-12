@@ -111,7 +111,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-[#391f52] mb-2">
-            Agent Dashboard
+            Analytics Dashboard
           </h1>
           <p className="text-[#391f52]">
             Monitor and analyze agent interactions
