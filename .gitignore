@@ -1,11 +1,1 @@
-# dependencies
-node_modules/
-
-# build output
-dist/
-build/
-.vercel/
-
-# misc
-.env
-.DS_Store
+"node_modules/" 
