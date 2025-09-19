@@ -162,7 +162,7 @@ function CallForm() {
     <>
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
         <h1 className="text-2xl font-bold text-center mb-6 text-[#391f52]">
-          CINDY AI
+          SUMA AI
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
