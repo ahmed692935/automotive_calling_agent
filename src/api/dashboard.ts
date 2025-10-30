@@ -13,6 +13,7 @@ export const fetchCallHistory = async (
     {
       headers: {
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
         "Content-Type": "application/json",
         Accept: "application/json",
       },

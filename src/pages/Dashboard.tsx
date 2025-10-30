@@ -110,19 +110,19 @@ const Dashboard = () => {
       <div className=" py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#391f52] mb-2">
+          <h1 className="text-4xl font-bold text-[#3F3EED] mb-2">
             Analytics Dashboard
           </h1>
-          <p className="text-[#391f52]">
-            Monitor and analyze agent interactions
-          </p>
+          <p className="text-black">Monitor and analyze agent interactions</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Total Calls */}
-          <div className="bg-white rounded-xl shadow-lg border border-purple-200 p-6 flex items-center justify-between">
-            {/* Text */}
+          <div
+            className="bg-white rounded-xl shadow-lg border border-blue-200 p-6 flex items-center justify-between 
+                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp"
+          >
             <div>
               <h3 className="text-lg font-semibold text-[#391f52]">
                 Total Calls
@@ -131,15 +131,16 @@ const Dashboard = () => {
                 {totalCalls || 0}
               </p>
             </div>
-
-            {/* Icon Box */}
-            <div className="bg-[#391f52] text-white p-4 rounded-lg flex items-center justify-center">
+            <div className="bg-[#3F3EED] text-white p-4 rounded-lg flex items-center justify-center">
               <FiPhone size={28} />
             </div>
           </div>
 
           {/* Successful Calls */}
-          <div className="bg-white rounded-xl shadow-lg border border-green-200 p-6 flex items-center justify-between">
+          <div
+            className="bg-white rounded-xl shadow-lg border border-green-200 p-6 flex items-center justify-between 
+                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp delay-100"
+          >
             <div>
               <h3 className="text-lg font-semibold text-green-700">
                 Successful Calls
@@ -154,7 +155,10 @@ const Dashboard = () => {
           </div>
 
           {/* Failed Calls */}
-          <div className="bg-white rounded-xl shadow-lg border border-red-200 p-6 flex items-center justify-between">
+          <div
+            className="bg-white rounded-xl shadow-lg border border-red-200 p-6 flex items-center justify-between 
+                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp delay-200"
+          >
             <div>
               <h3 className="text-lg font-semibold text-red-700">Others</h3>
               <p className="text-3xl font-bold text-gray-800 mt-1">
@@ -168,11 +172,12 @@ const Dashboard = () => {
         </div>
 
         {/* Table Container */}
-        <div className="bg-white rounded-xl border border-purple-200 shadow-xl overflow-hidden">
+        <div className="bg-white rounded-xl border border-blue-200 shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#391f52] to-purple-700 border-b border-purple-500">
+                {/* <tr className="bg-[#391f52] to-purple-700 border-b border-purple-500"> */}
+                <tr className="bg-[#3F3EED] border-b border-blue-500">
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     User Info
                   </th>
@@ -271,8 +276,8 @@ const Dashboard = () => {
                       className="text-center py-10 text-[#391f52] font-medium"
                     >
                       <div className="flex flex-col items-center space-y-2">
-                        <div className="w-8 h-8 border-4 border-purple-300 border-t-[#391f52] rounded-full animate-spin"></div>
-                        <p>Loading calls...</p>
+                        <div className="w-8 h-8 border-4 border-[#3F3EED] border-t-[#5454f9] rounded-full animate-spin"></div>
+                        <p className="text-[#3F3EED]">Loading calls...</p>
                       </div>
                     </td>
                   </tr>
@@ -280,8 +285,8 @@ const Dashboard = () => {
                   calls?.map((row, index) => (
                     <tr
                       key={row.id}
-                      className={`border-b border-purple-100 hover:bg-purple-50 transition-colors duration-200 ${
-                        index % 2 === 0 ? "bg-purple-25" : "bg-white"
+                      className={`border-b border-blue-100 hover:bg-blue-50 transition-colors duration-200 ${
+                        index % 2 === 0 ? "bg-blue-25" : "bg-white"
                       }`}
                     >
                       <td className="px-4 py-4 text-gray-800 whitespace-nowrap">
@@ -299,15 +304,18 @@ const Dashboard = () => {
                         <span
                           className={`px-2 py-1 rounded-full font-semibold
                     ${
-                      row.status === "completed"
+                      row.status === "completed" || row.status === "connected"
                         ? "bg-green-100 text-green-800"
                         : ""
                     }
                     ${
-                      row.status === "queued" ? "bg-gray-200 text-gray-800" : ""
+                      row.status === "not_attended" ||
+                      row.status === "no-answer"
+                        ? "bg-gray-200 text-gray-800"
+                        : ""
                     }
                     ${
-                      row.status === "no-answer"
+                      row.status === "no-answer" || row.status === "busy"
                         ? "bg-red-100 text-red-800"
                         : ""
                     }
@@ -330,7 +338,7 @@ const Dashboard = () => {
                             href={row.recording_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-purple-600 underline"
+                            className="text-[#3F3EED] underline"
                           >
                             Listen
                           </a>
@@ -341,7 +349,7 @@ const Dashboard = () => {
                       <td className="px-4 py-4 text-center whitespace-nowrap">
                         <button
                           onClick={() => handleOpenModal(row)}
-                          className="px-4 py-2 cursor-pointer text-sm font-medium bg-[#391f52] text-white rounded-lg hover:scale-105 transition"
+                          className="px-4 py-2 cursor-pointer text-sm font-medium bg-[#3F3EED] text-white rounded-lg hover:scale-105 transition"
                         >
                           Details
                         </button>
@@ -388,9 +396,10 @@ const Dashboard = () => {
           ></div>
 
           {/* Modal Content */}
-          <div className="relative bg-white w-full max-w-2xl rounded-xl border border-purple-200 shadow-2xl overflow-hidden">
+          <div className="relative bg-white w-full max-w-2xl rounded-xl border border-blue-200 shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="p-6 border-b border-purple-200 bg-gradient-to-b from-[#6d0f78] to-[#0a0f2d]">
+            {/* <div className="p-6 border-b border-blue-200 bg-gradient-to-b from-[#6d0f78] to-[#0a0f2d]"> */}
+            <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-[#2A1EB3] via-[#3F3EED] to-[#7C78FF]">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">
@@ -400,30 +409,30 @@ const Dashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 mt-3 gap-1 md:gap-30 text-sm">
                     {/* Left Column */}
                     <div className="space-y-1">
-                      <p className="text-purple-100">
-                        <span className="text-purple-200">User ID:</span>{" "}
+                      <p className="text-white">
+                        <span className="text-white">User ID:</span>{" "}
                         {selectedRow.user_id || "N/A"}
                       </p>
-                      <p className="text-purple-100">
-                        <span className="text-purple-200">Agent ID:</span>{" "}
+                      <p className="text-white">
+                        <span className="text-white">Agent ID:</span>{" "}
                         {selectedRow.voice_id || "N/A"}
                       </p>
-                      <p className="text-purple-100">
-                        <span className="text-purple-200">Call ID:</span>{" "}
+                      <p className="text-white">
+                        <span className="text-white">Call ID:</span>{" "}
                         {selectedRow.call_id || "N/A"}
                       </p>
                     </div>
 
                     {/* Right Column */}
                     <div className="space-y-1">
-                      <p className="text-purple-100">
-                        <span className="text-purple-200">Call Started:</span>{" "}
+                      <p className="text-white">
+                        <span className="text-white">Call Started:</span>{" "}
                         {selectedRow.started_at
                           ? new Date(selectedRow.started_at).toLocaleString()
                           : "N/A"}
                       </p>
-                      <p className="text-purple-100">
-                        <span className="text-purple-200">Call Ended:</span>{" "}
+                      <p className="text-white">
+                        <span className="text-white">Call Ended:</span>{" "}
                         {selectedRow.ended_at
                           ? new Date(selectedRow.ended_at).toLocaleString()
                           : "N/A"}
@@ -434,7 +443,7 @@ const Dashboard = () => {
 
                 <button
                   onClick={handleCloseModal}
-                  className="text-purple-200 hover:text-white transition-colors p-1 cursor-pointer"
+                  className="text-blue-200 hover:text-white transition-colors p-1 cursor-pointer"
                 >
                   <svg
                     className="w-6 h-6"
@@ -454,31 +463,31 @@ const Dashboard = () => {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex border-b border-purple-200 bg-purple-50">
+            <div className="flex border-b border-blue-200 bg-blue-50">
               <button
                 className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
                   activeTab === "transcription"
-                    ? "text-[#391f52] bg-white"
-                    : "text-purple-900 hover:text-purple-700 hover:bg-purple-100"
+                    ? "text-[#3F3EED] bg-white"
+                    : "text-blue-900 hover:text-blue-700 hover:bg-blue-100"
                 }`}
                 onClick={() => setActiveTab("transcription")}
               >
                 Transcription
                 {activeTab === "transcription" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#391f52]"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
                 )}
               </button>
               <button
                 className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
                   activeTab === "summary"
-                    ? "text-[#391f52] bg-white"
-                    : "text-purple-900 hover:text-purple-700 hover:bg-purple-100"
+                    ? "text-[#3F3EED] bg-white"
+                    : "text-blue-900 hover:text-blue-700 hover:bg-blue-100"
                 }`}
                 onClick={() => setActiveTab("summary")}
               >
                 Summary
                 {activeTab === "summary" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#391f52]"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
                 )}
               </button>
             </div>
@@ -488,18 +497,38 @@ const Dashboard = () => {
               <div className="text-gray-700 leading-relaxed">
                 {activeTab === "transcription" ? (
                   <div>
-                    <h4 className="text-[#391f52] font-semibold mb-3">
+                    <h4 className="text-[#3F3EED] font-semibold mb-3">
                       Call Transcription
                     </h4>
                     {/* <p className="text-gray-600">{selectedRow.transcription}</p> */}
-                    {selectedRow.transcript ? (
+                    {/* {selectedRow.transcript ? (
                       <ul className="space-y-2">
                         {selectedRow.transcript.map((line, idx) => (
                           <li key={idx} className="text-sm">
-                            <span className="font-semibold text-[#391f52]">
+                            <span className="font-semibold text-[#3F3EED]">
                               {line.role}:
                             </span>{" "}
                             {line.text}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-600">
+                        No transcription available
+                      </p>
+                    )} */}
+
+                    {selectedRow.transcript &&
+                    Array.isArray(selectedRow.transcript.items) ? (
+                      <ul className="space-y-2">
+                        {selectedRow.transcript.items.map((item, idx) => (
+                          <li key={idx} className="text-sm">
+                            <span className="font-semibold text-[#3F3EED]">
+                              {item.role === "assistant" ? "Agent" : "User"}:
+                            </span>{" "}
+                            {Array.isArray(item.content)
+                              ? item.content.join(" ")
+                              : item.content || ""}
                           </li>
                         ))}
                       </ul>
@@ -511,7 +540,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div>
-                    <h4 className="text-[#391f52] font-semibold mb-3">
+                    <h4 className="text-[#3F3EED] font-semibold mb-3">
                       Call Summary
                     </h4>
                     <p className="text-gray-600">
@@ -523,10 +552,10 @@ const Dashboard = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-purple-200 bg-purple-50 flex justify-center">
+            <div className="p-6 border-t border-blue-200 bg-blue-50 flex justify-center">
               <button
                 onClick={handleCloseModal}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#391f52] text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
+                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#3F3EED] text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
               >
                 Close
               </button>

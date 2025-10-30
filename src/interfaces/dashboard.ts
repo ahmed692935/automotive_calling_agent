@@ -46,18 +46,90 @@
 // }
 
 // One transcript line in the call
-export interface TranscriptLine {
+// export interface TranscriptLine {
+//   role: string;
+//   text: string;
+// }
+
+// // Single Call record
+// export interface Call {
+//   id: number;
+//   call_id: string;
+//   status:
+//     | "completed"
+//     | "no-answer"
+//     | "queued"
+//     | "busy"
+//     | "not_attended"
+//     | "connected"
+//     | null;
+//   duration: number | null;
+//   // transcript: TranscriptLine[] | null;
+//   transcript: TranscriptLine[] | null;
+//   summary: string | null;
+//   recording_url: string | null;
+//   created_at: string;
+//   started_at: string | null;
+//   ended_at: string | null;
+//   voice_id: string;
+//   voice_name: string;
+//   from_number: string | null;
+//   to_number: string | null;
+//   user_id: number;
+//   username: string;
+//   email: string;
+// }
+
+// // Pagination info
+// export interface Pagination {
+//   page: number;
+//   perPage: number;
+//   total: number;
+//   completed_calls: number;
+//   not_completed_calls: number;
+// }
+
+// // API response for call history
+// export interface CallHistoryResponse {
+//   user_id: number;
+//   calls: Call[];
+//   pagination: Pagination;
+// }
+
+// // Local state shape (Redux / React state)
+// export interface CallHistoryState {
+//   loading: boolean;
+//   error: string | null;
+//   calls: Call[];
+//   pagination: Pagination | null;
+// }
+
+// // ✅ Type for table rows (you can use Call directly too)
+// export type RowData = Call;
+
+export interface TranscriptItem {
   role: string;
-  text: string;
+  content: string[] | string;
+}
+
+export interface Transcript {
+  items: TranscriptItem[];
 }
 
 // Single Call record
 export interface Call {
   id: number;
   call_id: string;
-  status: "completed" | "no-answer" | "queued" | "busy" | null;
+  status:
+    | "completed"
+    | "no-answer"
+    | "queued"
+    | "busy"
+    | "not_attended"
+    | "connected"
+    | null;
   duration: number | null;
-  transcript: TranscriptLine[] | null;
+  transcript: Transcript | null; // ✅ Changed here
   summary: string | null;
   recording_url: string | null;
   created_at: string;
@@ -88,7 +160,7 @@ export interface CallHistoryResponse {
   pagination: Pagination;
 }
 
-// Local state shape (Redux / React state)
+// Local state shape
 export interface CallHistoryState {
   loading: boolean;
   error: string | null;
@@ -96,5 +168,4 @@ export interface CallHistoryState {
   pagination: Pagination | null;
 }
 
-// ✅ Type for table rows (you can use Call directly too)
 export type RowData = Call;

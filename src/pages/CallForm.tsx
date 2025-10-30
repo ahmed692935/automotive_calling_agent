@@ -15,6 +15,9 @@ import { checkCallStatus, initiateCall } from "../api/Call";
 import type { RootState } from "../store/store";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { IoCall } from "react-icons/io5";
+import type { AxiosError } from "axios";
+import toast from "react-hot-toast";
 // import { useState } from "react";
 // import type { TranscriptLine } from "../interfaces/dashboard";
 // import { useNavigate } from "react-router-dom";
@@ -67,11 +70,13 @@ function CallForm() {
       localStorage.setItem("lastCallId", res.call_id);
       localStorage.setItem("callerEmail", values.caller_email);
     } catch (err: unknown) {
-      let message = "Failed to create call";
-      if (err instanceof Error) {
-        message = err.message;
-      }
-      dispatch(createCallFailure(message));
+      // let message = "Failed to create call";
+      // if (err instanceof Error) {
+      //   message = err.message;
+      // }
+      const error = err as AxiosError<{ error: string }>;
+      toast.error(error?.response?.data?.error || "Oops an error occurred");
+      dispatch(createCallFailure(error.message));
     }
   };
 
@@ -87,9 +92,11 @@ function CallForm() {
       if (
         res.status === "completed" ||
         res.status === "busy" ||
+        res.status === "ended" ||
         res.status === "no-answer"
       ) {
         if (interval) clearInterval(interval); // 👈 stop API hits
+        dispatch(togglePopup(false));
         navigate("/dashboard"); // 👈 redirect to dashboard
       }
     } catch (err) {
@@ -160,24 +167,24 @@ function CallForm() {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-center mb-6 text-[#391f52]">
-          SUMA AI
+      {/* <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"> */}
+      <div className="max-w-3xl mx-auto p-8">
+        <h1 className="text-2xl font-bold text-center mb-10 text-[#3F3EED]">
+          Let AI Handle Your Next Call
         </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name + Email */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Your Name
               </label>
               <input
                 type="text"
                 {...register("caller_name", { required: "Name is required" })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
-                  errors.caller_name ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] hover:border-blue-400
+ ${errors.caller_name ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Your Name"
               />
               {errors.caller_name && (
@@ -188,7 +195,7 @@ function CallForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Your Email
               </label>
               <input
@@ -200,9 +207,10 @@ function CallForm() {
                     message: "Email is invalid",
                   },
                 })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
-                  errors.caller_email ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 hover:border-blue-400
+ py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
+   errors.caller_email ? "border-red-500" : "border-gray-300"
+ }`}
                 placeholder="name@example.com"
               />
               {errors.caller_email && (
@@ -216,7 +224,7 @@ function CallForm() {
           {/* Phone Numbers */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Your Phone Number
               </label>
               <input
@@ -228,7 +236,7 @@ function CallForm() {
                     message: "Enter a valid phone number",
                   },
                 })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
+                className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                   errors.caller_number ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="+1234567890"
@@ -241,7 +249,7 @@ function CallForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Number to Call
               </label>
               <input
@@ -253,7 +261,7 @@ function CallForm() {
                     message: "Enter a valid phone number",
                   },
                 })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
+                className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                   errors.outbound_number ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="+1234567890"
@@ -268,12 +276,12 @@ function CallForm() {
 
           {/* Agent Name (New Field) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Agent Name
             </label>
             <select
               {...register("voice", { required: "Agent name is required" })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
                 errors.voice ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -298,13 +306,13 @@ function CallForm() {
 
           {/* Objective */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Call Objective
             </label>
             <input
               type="text"
               {...register("objective", { required: "Objective is required" })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                 errors.objective ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Schedule a meeting"
@@ -318,12 +326,12 @@ function CallForm() {
 
           {/* Context */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Call Context
             </label>
             <textarea
               {...register("context", { required: "Context is required" })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400  ${
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                 errors.context ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Provide any additional context for the call..."
@@ -337,12 +345,12 @@ function CallForm() {
 
           {/* Language */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Language
             </label>
             <select
               {...register("language")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-400 "
+              className="w-full px-4 py-2 border border-gray-300 hover:border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] "
             >
               <option value="english">English</option>
               <option value="spanish">Spanish</option>
@@ -354,7 +362,7 @@ function CallForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-3 bg-[#391f52] cursor-pointer text-white rounded-md hover:bg-purple-900 focus:outline-none focus:ring-1 focus:ring-purple-400  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#3F3EED] cursor-pointer text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Initiating Call..." : "Initiate Call"}
             </button>
@@ -379,7 +387,7 @@ function CallForm() {
               </span>
             </div>
             {/* Transcript Box */}
-            <div className="flex justify-between border border-purple-200 bg-purple-50 px-6 p-2">
+            {/* <div className="flex justify-between border border-purple-200 bg-purple-50 px-6 p-2">
               <p className="text-base font-semibold text-[#391f52] text-start mb-1 ">
                 Call Transcript
               </p>
@@ -387,11 +395,32 @@ function CallForm() {
                 <span className="font-bold">Status:</span>{" "}
                 {status ?? "Pending..."}
               </p>
+            </div> */}
+            <div className="rounded-lg">
+              {/* Caller Section */}
+              <div className="flex flex-col items-center justify-center py-5">
+                {/* Animated Circle */}
+                <div className="relative">
+                  {/* Outer Animated Pulse */}
+                  <span className="absolute inset-0 rounded-full bg-blue-300 opacity-60 animate-ping"></span>
+
+                  {/* Inner Static Circle */}
+                  <div className="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center shadow-md relative overflow-hidden">
+                    <IoCall color="white" size={30} />
+                  </div>
+                </div>
+
+                {/* Status Below */}
+                <p className="mt-6 text-lg font-medium text-[#3F3EED] animate-pulse">
+                  {status ?? "Connecting..."}
+                </p>
+              </div>
             </div>
-            <div className="p-6 max-h-96 overflow-y-auto">
+
+            <div className="p-6 max-h-96 overflow-y-auto border-t border-blue-200 bg-blue-50 ">
               <div className="text-gray-700 leading-relaxed">
-                {Array.isArray(transcript) && transcript.length > 0 ? (
-                  <ul className="space-y-2">
+                {/* {Array.isArray(transcript) && transcript.length > 0 ? (
+                  <ul className="space-y-2"> */}
                     {/* {transcript.map((line, idx) => (
                       <li key={idx} className="text-sm">
                         {typeof line === "object" ? (
@@ -406,7 +435,7 @@ function CallForm() {
                         )}
                       </li>
                     ))} */}
-                    {Array.isArray(transcript) && transcript.length > 0 ? (
+                    {/* {Array.isArray(transcript) && transcript.length > 0 ? (
                       <div className="space-y-1">
                         {transcript.map((line, idx) => (
                           <p key={idx} className="text-sm">
@@ -425,7 +454,7 @@ function CallForm() {
                   </ul>
                 ) : (
                   <p className="text-gray-500 text-sm">No transcript yet...</p>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -440,16 +469,16 @@ function CallForm() {
                 ))
               )}
             </div> */}
-            <div className="p-6 border-t border-purple-200 bg-purple-50 flex justify-center">
+            <div className="p-6 border-t border-blue-200 flex justify-center">
               <button
                 onClick={() => callId && handlePoll(callId)}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#391f52] text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
+                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#3F3EED] text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
               >
                 Check Status Now
               </button>
               <button
                 onClick={() => dispatch(togglePopup(false))}
-                className="ml-4 px-6 py-2 bg-gray-300 text-black rounded-lg"
+                className="ml-4 px-6 py-2 bg-gray-300 text-black rounded-lg cursor-pointer"
               >
                 Close
               </button>
