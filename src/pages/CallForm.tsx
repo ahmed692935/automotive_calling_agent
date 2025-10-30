@@ -417,7 +417,7 @@ function CallForm() {
               </div>
             </div>
 
-            <div className="p-6 max-h-96 overflow-y-auto border-t border-blue-200 bg-blue-50 ">
+            {/* <div className="p-6 max-h-96 overflow-y-auto border-t border-blue-200 bg-blue-50 "> */}
               <div className="text-gray-700 leading-relaxed">
                 {/* {Array.isArray(transcript) && transcript.length > 0 ? (
                   <ul className="space-y-2"> */}
@@ -456,7 +456,7 @@ function CallForm() {
                   <p className="text-gray-500 text-sm">No transcript yet...</p>
                 )} */}
               </div>
-            </div>
+            {/* </div> */}
 
             {/* <div className="flex-1 overflow-y-auto border rounded-md p-3 mb-4 bg-gray-50 text-left">
               {transcript.length === 0 ? (
