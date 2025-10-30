@@ -292,7 +292,7 @@ const Dashboard = () => {
                       <td className="px-4 py-4 text-gray-800 whitespace-nowrap">
                         {row.username}
                         <p className="text-xs">{row.email}</p>
-                        <p className="text-xs">{row.from_number || "N/A"}</p>
+                        {/* <p className="text-xs">{row.from_number || "N/A"}</p> */}
                       </td>
                       <td className="px-4 py-4 text-gray-700 whitespace-nowrap">
                         {row.voice_name}
