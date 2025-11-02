@@ -79,6 +79,41 @@ const Dashboard = () => {
 
     loadHistory();
   }, [dispatch, token, currentPage]);
+  // useEffect(() => {
+  //   const loadHistory = async () => {
+  //     if (token) {
+  //       try {
+  //         dispatch(fetchCallsStart());
+  //         const data = await fetchCallHistory(token, currentPage, pageSize);
+
+  //         dispatch(
+  //           fetchCallsSuccess({
+  //             calls: data.calls,
+  //             pagination: data.pagination,
+  //           })
+  //         );
+  //       } catch (err: unknown) {
+  //         console.error("Failed to fetch call history:", err);
+  //         let errorMessage = "Failed to fetch call history";
+
+  //         if (err instanceof Error) {
+  //           errorMessage = err.message;
+  //         }
+
+  //         dispatch(fetchCallsFailure(errorMessage));
+  //       }
+  //     }
+  //   };
+
+  //   // Initial load
+  //   loadHistory();
+
+  //   // Auto-refresh every 5s
+  //   const intervalId = window.setInterval(loadHistory, 5000);
+
+  //   // Cleanup
+  //   return () => window.clearInterval(intervalId);
+  // }, [dispatch, token, currentPage]);
 
   // if (loading) return <p>Loading calls...</p>;
   // if (loading)
@@ -219,7 +254,7 @@ const Dashboard = () => {
                     Call Creation
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Call Duration (mins)
+                    Call Duration (sec)
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     Recording Url
