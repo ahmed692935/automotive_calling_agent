@@ -5,15 +5,16 @@ import {
   createCallFailure,
   createCallStart,
   createCallSuccess,
+  resetCall,
   setTranscript,
   togglePopup,
   //   togglePopup,
 } from "../store/slices/callForm";
 import { useDispatch, useSelector } from "react-redux";
-import { checkCallStatus, initiateCall } from "../api/Call";
+import { checkCallStatus, getSystemPrompt, initiateCall } from "../api/Call";
 // import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoCall } from "react-icons/io5";
 import type { AxiosError } from "axios";
@@ -30,6 +31,7 @@ function CallForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<CallFormInputs>({
     defaultValues: {
       caller_name: user?.username || "",
@@ -61,6 +63,7 @@ function CallForm() {
 
   const onSubmit = async (values: CallFormInputs) => {
     try {
+      dispatch(resetCall());
       dispatch(createCallStart());
       if (!token) throw new Error("No token found. Please login again.");
 
@@ -93,7 +96,7 @@ function CallForm() {
         res.status === "completed" ||
         res.status === "busy" ||
         res.status === "ended" ||
-        res.status === "no-answer"
+        res.status === "unanswered"
       ) {
         if (interval) clearInterval(interval); // 👈 stop API hits
         dispatch(togglePopup(false));
@@ -116,6 +119,34 @@ function CallForm() {
       if (interval) clearInterval(interval);
     };
   }, [openPopup, callId, token]);
+
+  const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
+
+  // const token = useSelector((state: RootState) => state.auth.user?.access_token);
+
+  // ✅ Fetch System Prompt and auto-fill "context"
+  useEffect(() => {
+    const fetchPrompt = async () => {
+      try {
+        setLoadingPrompt(true);
+        if (!token) return;
+
+        const response = await getSystemPrompt(token);
+        if (response?.system_prompt) {
+          // ✅ Fill “Call Context” field automatically
+          setValue("context", response.system_prompt);
+        }
+      } catch (err) {
+        const error = err as AxiosError<{ error?: string }>;
+        toast.error(error.response?.data?.error || "Failed to load prompt.");
+        console.error("Prompt fetch error:", err);
+      } finally {
+        setLoadingPrompt(false);
+      }
+    };
+
+    fetchPrompt();
+  }, [token, setValue]);
 
   // ✅ Status check function
   //   const handlePoll = async (id: string) => {
@@ -168,7 +199,7 @@ function CallForm() {
   return (
     <>
       {/* <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"> */}
-      <div className="max-w-3xl mx-auto p-8">
+      <div className="max-w-3xl mx-auto p-8 mt-8">
         <h1 className="text-2xl font-bold text-center mb-10 text-[#3F3EED]">
           Let AI Handle Your Next Call
         </h1>
@@ -222,8 +253,8 @@ function CallForm() {
           </div>
 
           {/* Phone Numbers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            {/* <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Your Phone Number
               </label>
@@ -246,7 +277,7 @@ function CallForm() {
                   {errors.caller_number.message}
                 </p>
               )}
-            </div>
+            </div> */}
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -305,7 +336,7 @@ function CallForm() {
           </div>
 
           {/* Objective */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Call Objective
             </label>
@@ -322,20 +353,33 @@ function CallForm() {
                 {errors.objective.message}
               </p>
             )}
-          </div>
+          </div> */}
 
           {/* Context */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Call Context
             </label>
-            <textarea
+            {/* <textarea
               {...register("context", { required: "Context is required" })}
               className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                 errors.context ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Provide any additional context for the call..."
-            ></textarea>
+            ></textarea> */}
+            <textarea
+              {...register("context", { required: "Context is required" })}
+              disabled={loadingPrompt} // ✅ disable while loading
+              placeholder={
+                loadingPrompt
+                  ? "Loading system prompt..."
+                  : "Provide any additional context for the call..."
+              }
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
+                errors.context ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+
             {errors.context && (
               <p className="text-red-500 text-xs mt-1">
                 {errors.context.message}
@@ -362,7 +406,7 @@ function CallForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-3 bg-[#3F3EED] cursor-pointer text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#3F3EED] w-full cursor-pointer text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Initiating Call..." : "Initiate Call"}
             </button>
@@ -418,10 +462,10 @@ function CallForm() {
             </div>
 
             {/* <div className="p-6 max-h-96 overflow-y-auto border-t border-blue-200 bg-blue-50 "> */}
-              <div className="text-gray-700 leading-relaxed">
-                {/* {Array.isArray(transcript) && transcript.length > 0 ? (
+            <div className="text-gray-700 leading-relaxed">
+              {/* {Array.isArray(transcript) && transcript.length > 0 ? (
                   <ul className="space-y-2"> */}
-                    {/* {transcript.map((line, idx) => (
+              {/* {transcript.map((line, idx) => (
                       <li key={idx} className="text-sm">
                         {typeof line === "object" ? (
                           <>
@@ -435,7 +479,7 @@ function CallForm() {
                         )}
                       </li>
                     ))} */}
-                    {/* {Array.isArray(transcript) && transcript.length > 0 ? (
+              {/* {Array.isArray(transcript) && transcript.length > 0 ? (
                       <div className="space-y-1">
                         {transcript.map((line, idx) => (
                           <p key={idx} className="text-sm">
@@ -455,7 +499,7 @@ function CallForm() {
                 ) : (
                   <p className="text-gray-500 text-sm">No transcript yet...</p>
                 )} */}
-              </div>
+            </div>
             {/* </div> */}
 
             {/* <div className="flex-1 overflow-y-auto border rounded-md p-3 mb-4 bg-gray-50 text-left">

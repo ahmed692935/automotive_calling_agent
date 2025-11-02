@@ -3,12 +3,14 @@ import type { RowData } from "../interfaces/dashboard";
 import { FiCheckCircle, FiPhone, FiXCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
-import { fetchCallHistory } from "../api/dashboard";
+import { fetchCallHistory, fetchRecordingStream } from "../api/dashboard";
 import {
   fetchCallsFailure,
   fetchCallsStart,
   fetchCallsSuccess,
 } from "../store/slices/dashboardSlice";
+import type { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -103,6 +105,29 @@ const Dashboard = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedRow(null);
+  };
+
+  const handleListenRecording = async (callId: string) => {
+    if (!token) return alert("Missing authentication token");
+
+    try {
+      const audioUrl = await fetchRecordingStream(callId, token);
+
+      // ✅ Option 1: Open in new tab
+      window.open(audioUrl, "_blank");
+
+      // ✅ Option 2 (alternative): Play inline
+      // const audio = new Audio(audioUrl);
+      // audio.play();
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ error: string }>;
+      toast.error(error?.response?.data?.error || "Oops an error occurred");
+      console.error(err);
+    }
+    // catch (error) {
+    //   console.error("Failed to fetch recording:", error);
+    //   // alert("Unable to fetch recording. Please try again later.");
+    // }
   };
 
   return (
@@ -310,7 +335,7 @@ const Dashboard = () => {
                     }
                     ${
                       row.status === "not_attended" ||
-                      row.status === "no-answer"
+                      row.status === "unanswered"
                         ? "bg-gray-200 text-gray-800"
                         : ""
                     }
@@ -332,7 +357,7 @@ const Dashboard = () => {
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                         {row.duration ? Number(row.duration).toFixed(2) : "N/A"}
                       </td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                         {row.recording_url ? (
                           <a
                             href={row.recording_url}
@@ -345,7 +370,16 @@ const Dashboard = () => {
                         ) : (
                           "N/A"
                         )}
+                      </td> */}
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                        <button
+                          onClick={() => handleListenRecording(row.call_id)}
+                          className="text-[#3F3EED] underline cursor-pointer hover:text-blue-700"
+                        >
+                          Listen
+                        </button>
                       </td>
+
                       <td className="px-4 py-4 text-center whitespace-nowrap">
                         <button
                           onClick={() => handleOpenModal(row)}
@@ -477,7 +511,7 @@ const Dashboard = () => {
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
                 )}
               </button>
-              <button
+              {/* <button
                 className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
                   activeTab === "summary"
                     ? "text-[#3F3EED] bg-white"
@@ -489,7 +523,7 @@ const Dashboard = () => {
                 {activeTab === "summary" && (
                   <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
                 )}
-              </button>
+              </button> */}
             </div>
 
             {/* Tab Content */}

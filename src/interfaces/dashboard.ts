@@ -122,6 +122,7 @@ export interface Call {
   call_id: string;
   status:
     | "completed"
+    | "unanswered"
     | "no-answer"
     | "queued"
     | "busy"

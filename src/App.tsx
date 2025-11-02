@@ -7,6 +7,7 @@ import SignUp from "./pages/Auth/signUp";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./routes/private";
 import CallForm from "./pages/CallForm";
+import AddPrompt from "./pages/AddPrompt";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/add-prompt"
+            element={
+              <PrivateRoute>
+                <AddPrompt />
               </PrivateRoute>
             }
           />

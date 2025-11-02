@@ -21,3 +21,21 @@ export const fetchCallHistory = async (
   );
   return response.data;
 };
+
+export const fetchRecordingStream = async (callId: string, token: string) => {
+  const response = await axiosInstance.get(
+    `${API_URL}/calls/${callId}/recording/stream`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+        Accept: "audio/mpeg", // or "application/octet-stream" depending on backend
+      },
+      responseType: "blob", // so it treats it as binary audio data
+    }
+  );
+
+  // Convert to a playable blob URL
+  const audioUrl = URL.createObjectURL(response.data);
+  return audioUrl;
+};

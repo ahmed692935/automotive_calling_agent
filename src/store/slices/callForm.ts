@@ -105,6 +105,7 @@ const callSlice = createSlice({
       state.callId = null;
       state.transcript = [];
       state.openPopup = false;
+      state.status = null;
     },
     // setTranscript(state, action: PayloadAction<TranscriptLine[]>) {
     //   state.transcript = action.payload;

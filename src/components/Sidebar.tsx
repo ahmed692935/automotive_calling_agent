@@ -108,6 +108,7 @@ const Sidebar = () => {
   const menuItems = [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Initiate Call", path: "/call" },
+    { label: "Add Prompt", path: "/add-prompt" },
   ];
 
   const handleLogout = () => {
