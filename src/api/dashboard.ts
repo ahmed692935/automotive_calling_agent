@@ -39,3 +39,19 @@ export const fetchRecordingStream = async (callId: string, token: string) => {
   const audioUrl = URL.createObjectURL(response.data);
   return audioUrl;
 };
+
+export const fetchCallTranscript = async (callId: string, token: string) => {
+  const response = await axiosInstance.get(
+    `${API_URL}/calls/${callId}/transcript`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};

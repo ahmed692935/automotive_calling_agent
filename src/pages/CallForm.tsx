@@ -32,6 +32,7 @@ function CallForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
+    reset,
   } = useForm<CallFormInputs>({
     defaultValues: {
       caller_name: user?.username || "",
@@ -100,7 +101,9 @@ function CallForm() {
       ) {
         if (interval) clearInterval(interval); // 👈 stop API hits
         dispatch(togglePopup(false));
-        navigate("/dashboard"); // 👈 redirect to dashboard
+
+        navigate("/call"); // 👈 redirect to dashboard
+        reset();
       }
     } catch (err) {
       console.error("Polling failed", err);
@@ -397,7 +400,7 @@ function CallForm() {
               className="w-full px-4 py-2 border border-gray-300 hover:border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] "
             >
               <option value="english">English</option>
-              <option value="spanish">Spanish</option>
+              {/* <option value="spanish">Spanish</option> */}
             </select>
           </div>
 

@@ -114,6 +114,7 @@ export interface TranscriptItem {
 
 export interface Transcript {
   items: TranscriptItem[];
+  note: string;
 }
 
 // Single Call record

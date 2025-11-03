@@ -3,7 +3,11 @@ import type { RowData } from "../interfaces/dashboard";
 import { FiCheckCircle, FiPhone, FiXCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
-import { fetchCallHistory, fetchRecordingStream } from "../api/dashboard";
+import {
+  fetchCallHistory,
+  fetchCallTranscript,
+  fetchRecordingStream,
+} from "../api/dashboard";
 import {
   fetchCallsFailure,
   fetchCallsStart,
@@ -17,6 +21,10 @@ const Dashboard = () => {
   const [selectedRow, setSelectedRow] = useState<RowData | null>(null);
   const [activeTab, setActiveTab] = useState<"transcription" | "summary">(
     "transcription"
+  );
+  const [transcriptLoading, setTranscriptLoading] = useState(false);
+  const [loadingRecordings, setLoadingRecordings] = useState<string | null>(
+    null
   );
 
   const dispatch = useDispatch<AppDispatch>();
@@ -131,10 +139,34 @@ const Dashboard = () => {
 
   if (error) return <p className="text-red-500">{error}</p>;
 
-  const handleOpenModal = (row: RowData) => {
+  // const handleOpenModal = (row: RowData) => {
+  //   setSelectedRow(row);
+  //   setActiveTab("transcription");
+  //   setOpenModal(true);
+  // };
+  const handleOpenModal = async (row: RowData) => {
     setSelectedRow(row);
     setActiveTab("transcription");
     setOpenModal(true);
+
+    if (!token) {
+      toast.error("Missing authentication token");
+      return;
+    }
+    setTranscriptLoading(true);
+    try {
+      const data = await fetchCallTranscript(row.call_id, token);
+      setSelectedRow((prev) =>
+        prev
+          ? { ...prev, transcript: data.transcript }
+          : { ...row, transcript: data.transcript }
+      );
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      toast.error(error?.response?.data?.error || "Failed to load transcript");
+    } finally {
+      setTranscriptLoading(false);
+    }
   };
 
   const handleCloseModal = () => {
@@ -142,27 +174,48 @@ const Dashboard = () => {
     setSelectedRow(null);
   };
 
+  // const handleListenRecording = async (callId: string) => {
+  //   if (!token) return alert("Missing authentication token");
+
+  //   try {
+  //     const audioUrl = await fetchRecordingStream(callId, token);
+
+  //     // ✅ Option 1: Open in new tab
+  //     window.open(audioUrl, "_blank");
+
+  //     // ✅ Option 2 (alternative): Play inline
+  //     // const audio = new Audio(audioUrl);
+  //     // audio.play();
+  //   } catch (err: unknown) {
+  //     const error = err as AxiosError<{ error: string }>;
+  //     toast.error(error?.response?.data?.error || "Oops an error occurred");
+  //     console.error(err);
+  //   }
+  //   // catch (error) {
+  //   //   console.error("Failed to fetch recording:", error);
+  //   //   // alert("Unable to fetch recording. Please try again later.");
+  //   // }
+  // };
   const handleListenRecording = async (callId: string) => {
-    if (!token) return alert("Missing authentication token");
+    if (!token) {
+      toast.error("Missing authentication token");
+      return;
+    }
+
+    setLoadingRecordings(callId); // ✅ Start loading spinner
 
     try {
       const audioUrl = await fetchRecordingStream(callId, token);
 
-      // ✅ Option 1: Open in new tab
+      // ✅ Open in new tab
       window.open(audioUrl, "_blank");
-
-      // ✅ Option 2 (alternative): Play inline
-      // const audio = new Audio(audioUrl);
-      // audio.play();
-    } catch (err: unknown) {
+    } catch (err) {
       const error = err as AxiosError<{ error: string }>;
       toast.error(error?.response?.data?.error || "Oops an error occurred");
       console.error(err);
+    } finally {
+      setLoadingRecordings(null); // ✅ Stop loader
     }
-    // catch (error) {
-    //   console.error("Failed to fetch recording:", error);
-    //   // alert("Unable to fetch recording. Please try again later.");
-    // }
   };
 
   return (
@@ -253,9 +306,9 @@ const Dashboard = () => {
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     Call Creation
                   </th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
+                  {/* <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     Call Duration (sec)
-                  </th>
+                  </th> */}
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     Recording Url
                   </th>
@@ -389,9 +442,9 @@ const Dashboard = () => {
                           ? new Date(row.started_at).toLocaleString()
                           : "N/A"}
                       </td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                         {row.duration ? Number(row.duration).toFixed(2) : "N/A"}
-                      </td>
+                      </td> */}
                       {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                         {row.recording_url ? (
                           <a
@@ -406,12 +459,33 @@ const Dashboard = () => {
                           "N/A"
                         )}
                       </td> */}
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
                         <button
                           onClick={() => handleListenRecording(row.call_id)}
                           className="text-[#3F3EED] underline cursor-pointer hover:text-blue-700"
                         >
                           Listen
+                        </button>
+                      </td> */}
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                        <button
+                          onClick={() => handleListenRecording(row.call_id)}
+                          disabled={loadingRecordings === row.call_id}
+                          className={`flex items-center gap-2 text-[#3F3EED] underline cursor-pointer 
+      ${
+        loadingRecordings === row.call_id
+          ? "opacity-60 pointer-events-none"
+          : "hover:text-blue-700"
+      }`}
+                        >
+                          {loadingRecordings === row.call_id ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-[#3F3EED] border-t-transparent rounded-full animate-spin"></div>
+                              <span>Listen</span>
+                            </>
+                          ) : (
+                            "Listen"
+                          )}
                         </button>
                       </td>
 
@@ -531,6 +605,15 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {transcriptLoading && (
+              <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10">
+                <div className="w-10 h-10 border-4 border-[#3F3EED] border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-[#3F3EED] mt-3 font-medium">
+                  Loading transcript...
+                </p>
+              </div>
+            )}
+
             {/* Tab Navigation */}
             <div className="flex border-b border-blue-200 bg-blue-50">
               <button
@@ -587,7 +670,7 @@ const Dashboard = () => {
                       </p>
                     )} */}
 
-                    {selectedRow.transcript &&
+                    {/* {selectedRow.transcript &&
                     Array.isArray(selectedRow.transcript.items) ? (
                       <ul className="space-y-2">
                         {selectedRow.transcript.items.map((item, idx) => (
@@ -604,6 +687,27 @@ const Dashboard = () => {
                     ) : (
                       <p className="text-gray-600">
                         No transcription available
+                      </p>
+                    )} */}
+                    {selectedRow.transcript &&
+                    Array.isArray(selectedRow.transcript.items) &&
+                    selectedRow.transcript.items.length > 0 ? (
+                      <ul className="space-y-2">
+                        {selectedRow.transcript.items.map((item, idx) => (
+                          <li key={idx} className="text-sm">
+                            <span className="font-semibold text-[#3F3EED]">
+                              {item.role === "assistant" ? "Agent" : "User"}:
+                            </span>{" "}
+                            {Array.isArray(item.content)
+                              ? item.content.join(" ")
+                              : item.content || ""}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-600">
+                        {selectedRow.transcript?.note ||
+                          "No transcript available"}
                       </p>
                     )}
                   </div>
