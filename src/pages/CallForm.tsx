@@ -400,8 +400,8 @@ function CallForm() {
               {...register("language")}
               className="w-full px-4 py-2 border border-gray-300 hover:border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] "
             >
-              <option value="english">English</option>
-              <option value="spanish">Spanish</option>
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
               <option value="german">German</option>
               <option value="italian">Italian</option>
               <option value="french">French</option>
