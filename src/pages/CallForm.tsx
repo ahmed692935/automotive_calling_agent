@@ -11,14 +11,15 @@ import {
   //   togglePopup,
 } from "../store/slices/callForm";
 import { useDispatch, useSelector } from "react-redux";
-import { checkCallStatus, getSystemPrompt, initiateCall } from "../api/Call";
+import { checkCallStatus, initiateCall } from "../api/Call";
 // import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoCall } from "react-icons/io5";
 import type { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 // import { useState } from "react";
 // import type { TranscriptLine } from "../interfaces/dashboard";
 // import { useNavigate } from "react-router-dom";
@@ -31,7 +32,7 @@ function CallForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setValue,
+    // setValue,
     reset,
   } = useForm<CallFormInputs>({
     defaultValues: {
@@ -123,33 +124,33 @@ function CallForm() {
     };
   }, [openPopup, callId, token]);
 
-  const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
+  // const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
 
   // const token = useSelector((state: RootState) => state.auth.user?.access_token);
 
   // ✅ Fetch System Prompt and auto-fill "context"
-  useEffect(() => {
-    const fetchPrompt = async () => {
-      try {
-        setLoadingPrompt(true);
-        if (!token) return;
+  // useEffect(() => {
+  //   const fetchPrompt = async () => {
+  //     try {
+  //       // setLoadingPrompt(true);
+  //       if (!token) return;
 
-        const response = await getSystemPrompt(token);
-        if (response?.system_prompt) {
-          // ✅ Fill “Call Context” field automatically
-          setValue("context", response.system_prompt);
-        }
-      } catch (err) {
-        const error = err as AxiosError<{ error?: string }>;
-        toast.error(error.response?.data?.error || "Failed to load prompt.");
-        console.error("Prompt fetch error:", err);
-      } finally {
-        setLoadingPrompt(false);
-      }
-    };
+  //       const response = await getSystemPrompt(token);
+  //       if (response?.system_prompt) {
+  //         // ✅ Fill “Call Context” field automatically
+  //         setValue("context", response.system_prompt);
+  //       }
+  //     } catch (err) {
+  //       const error = err as AxiosError<{ error?: string }>;
+  //       toast.error(error.response?.data?.error || "Failed to load prompt.");
+  //       console.error("Prompt fetch error:", err);
+  //     } finally {
+  //       // setLoadingPrompt(false);
+  //     }
+  //   };
 
-    fetchPrompt();
-  }, [token, setValue]);
+  //   fetchPrompt();
+  // }, [token, setValue]);
 
   // ✅ Status check function
   //   const handlePoll = async (id: string) => {
@@ -320,16 +321,16 @@ function CallForm() {
               }`}
             >
               <option value="">Select Agent</option>
-              <option value="david">David - english (Male)</option>
-              <option value="ravi">Ravi - english (Male)</option>
-              <option value="emily-british">Emily - english (Female)</option>
-              <option value="alice-british">Alice - english (Female)</option>
-              <option value="julia-british">Julia - english (Female)</option>
-              <option value="julio">Julio - spanish (Male)</option>
-              <option value="donato">Donato - spanish (Male)</option>
-              <option value="helena-spanish">Helena - spanish (Female)</option>
-              <option value="rosa">Rosa - spanish (Female)</option>
-              <option value="mariam">Mariam - spanish (Female)</option>
+              <option value="david">David - (Male)</option>
+              <option value="ravi">Ravi - (Male)</option>
+              <option value="emily-british">Emily - (Female)</option>
+              <option value="alice-british">Alice - (Female)</option>
+              <option value="julia-british">Julia - (Female)</option>
+              <option value="julio">Julio - (Male)</option>
+              <option value="donato">Donato - (Male)</option>
+              <option value="helena-spanish">Helena - (Female)</option>
+              <option value="rosa">Rosa - (Female)</option>
+              <option value="mariam">Mariam - (Female)</option>
             </select>
             {errors.voice && (
               <p className="text-red-500 text-xs mt-1">
@@ -363,14 +364,14 @@ function CallForm() {
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Call Context
             </label>
-            {/* <textarea
+            <textarea
               {...register("context", { required: "Context is required" })}
               className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
                 errors.context ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Provide any additional context for the call..."
-            ></textarea> */}
-            <textarea
+            ></textarea>
+            {/* <textarea
               {...register("context", { required: "Context is required" })}
               disabled={loadingPrompt} // ✅ disable while loading
               placeholder={
@@ -387,7 +388,7 @@ function CallForm() {
               <p className="text-red-500 text-xs mt-1">
                 {errors.context.message}
               </p>
-            )}
+            )} */}
           </div>
 
           {/* Language */}
@@ -400,7 +401,10 @@ function CallForm() {
               className="w-full px-4 py-2 border border-gray-300 hover:border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] "
             >
               <option value="english">English</option>
-              {/* <option value="spanish">Spanish</option> */}
+              <option value="spanish">Spanish</option>
+              <option value="german">German</option>
+              <option value="italian">Italian</option>
+              <option value="french">French</option>
             </select>
           </div>
 

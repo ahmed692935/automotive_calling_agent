@@ -211,8 +211,12 @@ const Dashboard = () => {
       window.open(audioUrl, "_blank");
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
-      toast.error(error?.response?.data?.error || "Oops an error occurred");
-      console.error(err);
+      toast.error(
+        error?.response?.data?.error ||
+          // error.message ||
+          "Recording Not Found or wait sometime for proper loading"
+      );
+      // console.error(err);
     } finally {
       setLoadingRecordings(null); // ✅ Stop loader
     }
