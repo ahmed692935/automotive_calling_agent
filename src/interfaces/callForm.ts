@@ -5,7 +5,7 @@ export interface CallFormInputs {
   outbound_number: string;
   objective: string;
   context: string;
-  language: "english" | "spanish";
+  language: "en" | "es";
   voice: string;
 }
 

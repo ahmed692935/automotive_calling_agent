@@ -34,6 +34,7 @@ function CallForm() {
     formState: { errors, isSubmitting },
     // setValue,
     reset,
+    watch,
   } = useForm<CallFormInputs>({
     defaultValues: {
       caller_name: user?.username || "",
@@ -42,7 +43,7 @@ function CallForm() {
       outbound_number: "",
       objective: "",
       context: "",
-      language: "english",
+      language: "en",
       voice: "",
     },
   });
@@ -309,56 +310,6 @@ function CallForm() {
             </div>
           </div>
 
-          {/* Agent Name (New Field) */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Agent Name
-            </label>
-            <select
-              {...register("voice", { required: "Agent name is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
-                errors.voice ? "border-red-500" : "border-gray-300"
-              }`}
-            >
-              <option value="">Select Agent</option>
-              <option value="david">David - (Male)</option>
-              <option value="ravi">Ravi - (Male)</option>
-              <option value="emily-british">Emily - (Female)</option>
-              <option value="alice-british">Alice - (Female)</option>
-              <option value="julia-british">Julia - (Female)</option>
-              <option value="julio">Julio - (Male)</option>
-              <option value="donato">Donato - (Male)</option>
-              <option value="helena-spanish">Helena - (Female)</option>
-              <option value="rosa">Rosa - (Female)</option>
-              <option value="mariam">Mariam - (Female)</option>
-            </select>
-            {errors.voice && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.voice.message}
-              </p>
-            )}
-          </div>
-
-          {/* Objective */}
-          {/* <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Call Objective
-            </label>
-            <input
-              type="text"
-              {...register("objective", { required: "Objective is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
-                errors.objective ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Schedule a meeting"
-            />
-            {errors.objective && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.objective.message}
-              </p>
-            )}
-          </div> */}
-
           {/* Context */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -402,11 +353,106 @@ function CallForm() {
             >
               <option value="en">English</option>
               <option value="es">Spanish</option>
-              <option value="german">German</option>
+              {/* <option value="german">German</option>
               <option value="italian">Italian</option>
-              <option value="french">French</option>
+              <option value="french">French</option> */}
             </select>
           </div>
+
+          {/* Agent Name (New Field) */}
+          {/* <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Agent Name
+            </label>
+            <select
+              {...register("voice", { required: "Agent name is required" })}
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
+                errors.voice ? "border-red-500" : "border-gray-300"
+              }`}
+            >
+              <option value="">Select Agent</option>
+              <option value="david">David - English (Male)</option>
+              <option value="ravi">Ravi - English (Male)</option>
+              <option value="emily-british">Emily - English (Female)</option>
+              <option value="alice-british">Alice - English (Female)</option>
+              <option value="julia-british">Julia - English (Female)</option>
+              <option value="julio">Julio - Spanish (Male)</option>
+              <option value="donato">Donato - Spanish (Male)</option>
+              <option value="helena-spanish">Helena - Spanish (Female)</option>
+              <option value="rosa">Rosa - Spanish (Female)</option>
+              <option value="mariam">Mariam - Spanish (Female)</option>
+            </select>
+            {errors.voice && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.voice.message}
+              </p>
+            )}
+          </div> */}
+          {/* Agent Name (Dynamic by Language) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Agent Name
+            </label>
+            <select
+              {...register("voice", { required: "Agent name is required" })}
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
+                errors.voice ? "border-red-500" : "border-gray-300"
+              }`}
+            >
+              {watch("language") === "es" ? (
+                <>
+                  <option value="">Select Spanish Agent</option>
+                  <option value="julio">Julio - Spanish (Male)</option>
+                  <option value="donato">Donato - Spanish (Male)</option>
+                  <option value="helena-spanish">
+                    Helena - Spanish (Female)
+                  </option>
+                  <option value="rosa">Rosa - Spanish (Female)</option>
+                  <option value="mariam">Mariam - Spanish (Female)</option>
+                </>
+              ) : (
+                <>
+                  <option value="">Select English Agent</option>
+                  <option value="david">David - English (Male)</option>
+                  <option value="ravi">Ravi - English (Male)</option>
+                  <option value="emily-british">
+                    Emily - English (Female)
+                  </option>
+                  <option value="alice-british">
+                    Alice - English (Female)
+                  </option>
+                  <option value="julia-british">
+                    Julia - English (Female)
+                  </option>
+                </>
+              )}
+            </select>
+            {errors.voice && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.voice.message}
+              </p>
+            )}
+          </div>
+
+          {/* Objective */}
+          {/* <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Call Objective
+            </label>
+            <input
+              type="text"
+              {...register("objective", { required: "Objective is required" })}
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
+                errors.objective ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Schedule a meeting"
+            />
+            {errors.objective && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.objective.message}
+              </p>
+            )}
+        </div> */}
 
           {/* Submit */}
           <div className="flex justify-center">
