@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BiMenu, BiX } from "react-icons/bi";
 import SumaLogo from "../../public/images/SumaWhite.jpeg";
 import SumaBlack from "../../public/images/sumaLogo.png";
+import { Link } from "react-router-dom";
 // import { Menu, X } from "lucide-react";
 
 function HeaderLanding() {
@@ -13,6 +14,14 @@ function HeaderLanding() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleScrollToSection = (id: string) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+      setMenuOpen(false); // close mobile menu if open
+    }
+  };
 
   const menuItems = ["Home", "About", "Services", "Contact"];
 
@@ -37,45 +46,49 @@ function HeaderLanding() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-6">
-            {menuItems.map((item, index) => (
-              <li
-                key={index}
-                className={`list-none cursor-pointer font-semibold transition-colors duration-200 text-base ${
-                  isScrolled
-                    ? "text-blue-900 hover:text-blue-700"
-                    : "text-white hover:text-blue-900"
-                }`}
-              >
-                {item}
-              </li>
-            ))}
+            {menuItems.map((item, index) => {
+              const id = item.toLowerCase(); // home, about, services, contact
+              return (
+                <li
+                  key={index}
+                  onClick={() => handleScrollToSection(id)}
+                  className={`list-none cursor-pointer font-semibold transition-colors duration-200 text-base ${
+                    isScrolled
+                      ? "text-blue-900 hover:text-blue-700"
+                      : "text-white hover:text-blue-900"
+                  }`}
+                >
+                  {item}
+                </li>
+              );
+            })}
           </nav>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex space-x-3">
-            <a
-              href="#"
+            <Link
+              to="/signup"
               className={`h-9 sm:h-10 px-3 sm:px-5 text-sm sm:text-base rounded-md font-semibold flex items-center justify-center transition-all duration-300
       ${
         isScrolled
           ? "bg-white text-blue-900 border border-blue-900 hover:bg-blue-900 hover:text-white"
-          : "bg-white text-blue-900 hover:bg-[#0A0C3F] hover:border-2 border-white hover:text-white"
+          : "bg-white text-blue-900 hover:bg-blue-900 hover:border-2 border-white hover:text-white"
       }`}
             >
               Sign Up
-            </a>
+            </Link>
 
-            <a
-              href="#"
+            <Link
+              to="/login"
               className={`h-9 sm:h-10 px-3 sm:px-5 text-sm sm:text-base rounded-md font-semibold flex items-center justify-center transition-all duration-300
       ${
         isScrolled
           ? "bg-white text-blue-900 border border-blue-900 hover:bg-blue-900 hover:text-white"
-          : "bg-white text-blue-900 hover:bg-[#0A0C3F] hover:border-2 border-white hover:text-white"
+          : "bg-white text-blue-900 hover:bg-blue-900 hover:border-2 border-white hover:text-white"
       }`}
             >
               Login
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -108,7 +121,7 @@ function HeaderLanding() {
               {menuItems.map((item, index) => (
                 <li
                   key={index}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => handleScrollToSection(item.toLowerCase())}
                   className="cursor-pointer text-blue-900 font-semibold text-lg hover:text-blue-700 transition-colors duration-200"
                 >
                   {item}
@@ -118,20 +131,20 @@ function HeaderLanding() {
 
             {/* Auth Buttons */}
             <div className="flex flex-col space-y-3 w-[80%] mt-10">
-              <a
-                href="#"
+              <Link
+                to="/signup"
                 onClick={() => setMenuOpen(false)}
                 className="bg-blue-900 text-white py-2 rounded-md font-semibold hover:bg-blue-800 text-center transition-all"
               >
                 Sign Up
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/login"
                 onClick={() => setMenuOpen(false)}
                 className="bg-white border border-blue-900 text-blue-900 py-2 rounded-md font-semibold hover:bg-blue-900 hover:text-white text-center transition-all"
               >
                 Login
-              </a>
+              </Link>
             </div>
           </div>
         </div>

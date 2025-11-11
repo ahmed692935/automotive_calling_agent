@@ -1,5 +1,6 @@
 import Header from "../components/HeaderLanding";
 import heroVideo from "../assets/Videos/herobg.mp4";
+import { Link } from "react-router-dom";
 
 function LandHeroSection() {
   return (
@@ -42,13 +43,16 @@ function LandHeroSection() {
         </p>
 
         <div className="mt-6 flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 items-center">
-          <button className="bg-[#0A0C3F] text-white text-sm sm:text-base font-semibold px-5 sm:px-8 py-2 sm:py-3 rounded-md shadow-lg border border-2 border-white hover:bg-white hover:text-blue-900 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer w-[85%] sm:w-auto">
-            Try It Now For Free
-          </button>
-
-          <button className="bg-white text-[#0A0C3F] hover:bg-[#0A0C3F] hover:text-white hover:border-white text-sm sm:text-base font-semibold px-5 sm:px-8 py-2 sm:py-3 rounded-md shadow-lg border border-2 border-blue-900 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer w-[85%] sm:w-auto">
-            Book a Demo
-          </button>
+          <Link to="/login">
+            <button className="bg-blue-900 text-white text-sm sm:text-base font-semibold px-5 sm:px-8 py-3 rounded-md shadow-lg border border-2 border-white hover:bg-white hover:text-blue-900 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer w-auto">
+              Try It Now For Free
+            </button>
+          </Link>
+          <Link to="/login">
+            <button className="bg-white text-blue-900 hover:bg-blue-900 hover:text-white hover:border-white text-sm sm:text-base font-semibold px-5 sm:px-8 py-3 rounded-md shadow-lg border border-2 border-blue-900 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer w-auto">
+              Book a Demo
+            </button>
+          </Link>
         </div>
       </div>
     </section>

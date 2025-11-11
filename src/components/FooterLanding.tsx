@@ -116,16 +116,16 @@ function FooterLanding() {
   const footerLinks = {
     Company: [
       { label: "Home", href: "/" },
-      { label: "Contact Us", href: "#" },
-      { label: "Terms of Use", href: "#" },
+      { label: "Contact Us", href: "#contact" },
+      { label: "Terms of Use", href: "#use" },
     ],
     "Solutions by Industries": [
-      { label: "Insurance", href: "#" },
-      { label: "Education", href: "#" },
-      { label: "Healthcare", href: "#" },
-      { label: "Real Estate", href: "#" },
-      { label: "Recruiting", href: "#" },
-      { label: "Technology", href: "#" },
+      { label: "Insurance", href: "#about" },
+      { label: "Education", href: "#about" },
+      { label: "Healthcare", href: "#about" },
+      { label: "Real Estate", href: "#about" },
+      { label: "Recruiting", href: "#about" },
+      { label: "Technology", href: "#about" },
     ],
     "Contact Us": [{ label: "pia@bysuma.com", href: "#" }],
   };

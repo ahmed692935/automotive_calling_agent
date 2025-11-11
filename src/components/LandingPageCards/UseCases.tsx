@@ -6,6 +6,7 @@ import calender from "../../assets/Icons/calender.webp";
 import fifth from "../../assets/Icons/fifth.webp";
 import list from "../../assets/Icons/list.webp";
 import LandCard from "../LandCard";
+import { Link } from "react-router-dom";
 
 function UseCases() {
   const useCases = [
@@ -75,9 +76,11 @@ function UseCases() {
       </p>
 
       <div className="mt-6">
-        <button className="text-blue-900 text-base font-semibold bg-white px-6 py-3 rounded-md border border-2 border-blue-900 hover:bg-blue-900 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-          <span>Request a Demo</span>
-        </button>
+        <Link to="/login">
+          <button className="text-blue-900 text-base font-semibold bg-white px-6 py-3 rounded-md border-2 border-blue-900 hover:bg-blue-900 hover:border hover:border-white hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+            <span>Request a Demo</span>
+          </button>
+        </Link>
       </div>
     </section>
   );

@@ -15,9 +15,9 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/landing-page" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route
-            path="/"
+            path="/login"
             element={
               <PublicRoute>
                 <SignIn />

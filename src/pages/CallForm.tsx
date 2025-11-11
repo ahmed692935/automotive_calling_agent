@@ -205,7 +205,7 @@ function CallForm() {
     <>
       {/* <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"> */}
       <div className="max-w-3xl mx-auto p-8 mt-8">
-        <h1 className="text-2xl font-bold text-center mb-10 text-[#3F3EED]">
+        <h1 className="text-2xl font-bold text-center mb-10 text-blue-900">
           Let AI Handle Your Next Call
         </h1>
 
@@ -219,7 +219,7 @@ function CallForm() {
               <input
                 type="text"
                 {...register("caller_name", { required: "Name is required" })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] hover:border-blue-400
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900 hover:border-blue-900
  ${errors.caller_name ? "border-red-500" : "border-gray-300"}`}
                 placeholder="Your Name"
               />
@@ -243,8 +243,8 @@ function CallForm() {
                     message: "Email is invalid",
                   },
                 })}
-                className={`w-full px-4 hover:border-blue-400
- py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
+                className={`w-full px-4 hover:border-blue-900
+ py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900  ${
    errors.caller_email ? "border-red-500" : "border-gray-300"
  }`}
                 placeholder="name@example.com"
@@ -297,7 +297,7 @@ function CallForm() {
                     message: "Enter a valid phone number",
                   },
                 })}
-                className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
+                className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  ${
                   errors.outbound_number ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="+1234567890"
@@ -317,7 +317,7 @@ function CallForm() {
             </label>
             <textarea
               {...register("context", { required: "Context is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  ${
                 errors.context ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Provide any additional context for the call..."
@@ -349,7 +349,7 @@ function CallForm() {
             </label>
             <select
               {...register("language")}
-              className="w-full px-4 py-2 border border-gray-300 hover:border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3F3EED] "
+              className="w-full px-4 py-2 border border-gray-300 hover:border-blue-900 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900 "
             >
               <option value="en">English</option>
               <option value="es">Spanish</option>
@@ -395,7 +395,7 @@ function CallForm() {
             </label>
             <select
               {...register("voice", { required: "Agent name is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
+              className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900 ${
                 errors.voice ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -456,12 +456,27 @@ function CallForm() {
 
           {/* Submit */}
           <div className="flex justify-center">
+            {/* <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 py-3 bg-blue-900 w-full cursor-pointer text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Initiating Call..." : "Initiate Call"}
+            </button> */}
+
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-3 bg-[#3F3EED] w-full cursor-pointer text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative px-6 py-3 bg-blue-900 w-full cursor-pointer text-white rounded-md overflow-hidden 
+             focus:outline-none focus:ring-1 focus:ring-blue-900 focus:ring-offset-2
+             transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Initiating Call..." : "Initiate Call"}
+              {/* Hover Light Overlay */}
+              <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
+
+              <span className="relative z-10">
+                {isSubmitting ? "Initiating Call..." : "Initiate Call"}
+              </span>
             </button>
           </div>
         </form>
@@ -499,16 +514,16 @@ function CallForm() {
                 {/* Animated Circle */}
                 <div className="relative">
                   {/* Outer Animated Pulse */}
-                  <span className="absolute inset-0 rounded-full bg-blue-300 opacity-60 animate-ping"></span>
+                  <span className="absolute inset-0 rounded-full bg-blue-900 opacity-60 animate-ping"></span>
 
                   {/* Inner Static Circle */}
-                  <div className="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center shadow-md relative overflow-hidden">
+                  <div className="w-20 h-20 rounded-full bg-blue-900 flex items-center justify-center shadow-md relative overflow-hidden">
                     <IoCall color="white" size={30} />
                   </div>
                 </div>
 
                 {/* Status Below */}
-                <p className="mt-6 text-lg font-medium text-[#3F3EED] animate-pulse">
+                <p className="mt-6 text-lg font-medium text-blue-900 animate-pulse">
                   {status ?? "Connecting..."}
                 </p>
               </div>
@@ -567,15 +582,26 @@ function CallForm() {
               )}
             </div> */}
             <div className="p-6 border-t border-blue-200 flex justify-center">
-              <button
+              {/* <button
                 onClick={() => callId && handlePoll(callId)}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#3F3EED] text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
+                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
               >
                 Check Status Now
+              </button> */}
+              <button
+                onClick={() => callId && handlePoll(callId)}
+                className="relative w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg 
+             transform hover:scale-105 transition-all duration-200 font-medium shadow-lg overflow-hidden"
+              >
+                {/* White overlay on hover */}
+                <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
+
+                <span className="relative z-10">Check Status Now</span>
               </button>
+
               <button
                 onClick={() => dispatch(togglePopup(false))}
-                className="ml-4 px-6 py-2 bg-gray-300 text-black rounded-lg cursor-pointer"
+                className="ml-4 px-6 py-2 bg-gray-200 border hover:bg-white text-black rounded-lg cursor-pointer"
               >
                 Close
               </button>

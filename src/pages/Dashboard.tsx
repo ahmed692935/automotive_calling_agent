@@ -224,10 +224,10 @@ const Dashboard = () => {
 
   return (
     <div className="">
-      <div className=" py-8">
+      <div className=" py-14">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#3F3EED] mb-2">
+          <h1 className="text-4xl font-bold text-blue-900 mb-2">
             Analytics Dashboard
           </h1>
           <p className="text-black">Monitor and analyze agent interactions</p>
@@ -248,7 +248,7 @@ const Dashboard = () => {
                 {totalCalls || 0}
               </p>
             </div>
-            <div className="bg-[#3F3EED] text-white p-4 rounded-lg flex items-center justify-center">
+            <div className="bg-blue-900 text-white p-4 rounded-lg flex items-center justify-center">
               <FiPhone size={28} />
             </div>
           </div>
@@ -289,12 +289,12 @@ const Dashboard = () => {
         </div>
 
         {/* Table Container */}
-        <div className="bg-white rounded-xl border border-blue-200 shadow-xl overflow-hidden">
+        <div className="bg-white rounded-xl border border-blue-900 shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 {/* <tr className="bg-[#391f52] to-purple-700 border-b border-purple-500"> */}
-                <tr className="bg-[#3F3EED] border-b border-blue-500">
+                <tr className="bg-blue-900 border-b border-blue-900">
                   <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
                     User Info
                   </th>
@@ -393,8 +393,8 @@ const Dashboard = () => {
                       className="text-center py-10 text-[#391f52] font-medium"
                     >
                       <div className="flex flex-col items-center space-y-2">
-                        <div className="w-8 h-8 border-4 border-[#3F3EED] border-t-[#5454f9] rounded-full animate-spin"></div>
-                        <p className="text-[#3F3EED]">Loading calls...</p>
+                        <div className="w-8 h-8 border-4 border-blue-900 border-t-blue-900 rounded-full animate-spin"></div>
+                        <p className="text- ">Loading calls...</p>
                       </div>
                     </td>
                   </tr>
@@ -475,16 +475,16 @@ const Dashboard = () => {
                         <button
                           onClick={() => handleListenRecording(row.call_id)}
                           disabled={loadingRecordings === row.call_id}
-                          className={`flex items-center gap-2 text-[#3F3EED] underline cursor-pointer 
+                          className={`flex items-center gap-2 text-blue-900 underline cursor-pointer 
       ${
         loadingRecordings === row.call_id
           ? "opacity-60 pointer-events-none"
-          : "hover:text-blue-700"
+          : "hover:text-blue-900"
       }`}
                         >
                           {loadingRecordings === row.call_id ? (
                             <>
-                              <div className="w-4 h-4 border-2 border-[#3F3EED] border-t-transparent rounded-full animate-spin"></div>
+                              <div className="w-4 h-4 border-2 border-blue-900 border-t-transparent rounded-full animate-spin"></div>
                               <span>Listen</span>
                             </>
                           ) : (
@@ -494,11 +494,18 @@ const Dashboard = () => {
                       </td>
 
                       <td className="px-4 py-4 text-center whitespace-nowrap">
-                        <button
+                        {/* <button
                           onClick={() => handleOpenModal(row)}
-                          className="px-4 py-2 cursor-pointer text-sm font-medium bg-[#3F3EED] text-white rounded-lg hover:scale-105 transition"
+                          className="px-4 py-2 cursor-pointer text-sm font-medium bg-blue-900 text-white rounded-lg hover:scale-105 transition"
                         >
                           Details
+                        </button> */}
+                        <button
+                          onClick={() => handleOpenModal(row)}
+                          className="relative px-4 py-2 cursor-pointer text-sm font-medium bg-blue-900 text-white rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105"
+                        >
+                          <span className="absolute inset-0 bg-white opacity-0 hover:opacity-20 transition-opacity duration-300 rounded-lg"></span>
+                          <span className="relative z-10">Details</span>
                         </button>
                       </td>
                     </tr>
@@ -546,7 +553,8 @@ const Dashboard = () => {
           <div className="relative bg-white w-full max-w-2xl rounded-xl border border-blue-200 shadow-2xl overflow-hidden">
             {/* Modal Header */}
             {/* <div className="p-6 border-b border-blue-200 bg-gradient-to-b from-[#6d0f78] to-[#0a0f2d]"> */}
-            <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-[#2A1EB3] via-[#3F3EED] to-[#7C78FF]">
+            {/* <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-[#2A1EB3] via-blue-900 to-[#7C78FF]"> */}
+            <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-blue-900 to-blue-900">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">
@@ -611,8 +619,8 @@ const Dashboard = () => {
 
             {transcriptLoading && (
               <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10">
-                <div className="w-10 h-10 border-4 border-[#3F3EED] border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-[#3F3EED] mt-3 font-medium">
+                <div className="w-10 h-10 border-4 border-blue-900 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-blue-900 mt-3 font-medium">
                   Loading transcript...
                 </p>
               </div>
@@ -623,14 +631,14 @@ const Dashboard = () => {
               <button
                 className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
                   activeTab === "transcription"
-                    ? "text-[#3F3EED] bg-white"
+                    ? "text-blue-900 bg-white"
                     : "text-blue-900 hover:text-blue-700 hover:bg-blue-100"
                 }`}
                 onClick={() => setActiveTab("transcription")}
               >
                 Transcription
                 {activeTab === "transcription" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-900"></div>
                 )}
               </button>
               {/* <button
@@ -653,7 +661,7 @@ const Dashboard = () => {
               <div className="text-gray-700 leading-relaxed">
                 {activeTab === "transcription" ? (
                   <div>
-                    <h4 className="text-[#3F3EED] font-semibold mb-3">
+                    <h4 className="text-blue-900 font-semibold mb-3">
                       Call Transcription
                     </h4>
                     {/* <p className="text-gray-600">{selectedRow.transcription}</p> */}
@@ -699,7 +707,7 @@ const Dashboard = () => {
                       <ul className="space-y-2">
                         {selectedRow.transcript.items.map((item, idx) => (
                           <li key={idx} className="text-sm">
-                            <span className="font-semibold text-[#3F3EED]">
+                            <span className="font-semibold text-blue-900">
                               {item.role === "assistant" ? "Agent" : "User"}:
                             </span>{" "}
                             {Array.isArray(item.content)
@@ -717,7 +725,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div>
-                    <h4 className="text-[#3F3EED] font-semibold mb-3">
+                    <h4 className="text-blue-900 font-semibold mb-3">
                       Call Summary
                     </h4>
                     <p className="text-gray-600">
@@ -730,11 +738,21 @@ const Dashboard = () => {
 
             {/* Modal Footer */}
             <div className="p-6 border-t border-blue-200 bg-blue-50 flex justify-center">
-              <button
+              {/* <button
                 onClick={handleCloseModal}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-[#3F3EED] text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
+                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
               >
                 Close
+              </button> */}
+              <button
+                onClick={handleCloseModal}
+                className="relative w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg 
+             transform hover:scale-105 transition-all duration-200 font-medium shadow-lg overflow-hidden"
+              >
+                {/* White overlay on hover */}
+                <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
+
+                <span className="relative z-10">Close</span>
               </button>
             </div>
           </div>

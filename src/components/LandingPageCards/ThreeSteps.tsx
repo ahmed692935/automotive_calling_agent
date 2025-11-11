@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function ThreeSteps() {
   const steps = [
     {
@@ -52,9 +54,11 @@ function ThreeSteps() {
       <p className="text-center text-gray-800 mt-8 text-sm md:text-base">
         It’s that simple!
       </p>
-      <button className="text-blue-900 text-base font-semibold bg-white px-6 py-3 rounded-md border border-2 border-blue-900 hover:bg-blue-900 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer mt-6">
-        <span>Try Suma.ai Today</span>
-      </button>
+      <Link to="/login">
+        <button className="text-blue-900 text-base font-semibold bg-white px-6 py-3 rounded-md border border-2 border-blue-900 hover:bg-blue-900 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer mt-6">
+          <span>Try Suma.ai Today</span>
+        </button>
+      </Link>
     </section>
   );
 }

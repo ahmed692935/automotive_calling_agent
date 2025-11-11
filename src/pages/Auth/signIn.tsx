@@ -67,7 +67,7 @@ const SignIn: React.FC = () => {
           {/* <div className="bg-gradient-to-r from-[#6d0f78] to-[#0a0f2d] p-2 rounded-lg shadow-lg">
             <FiDownload className="text-white text-4xl rotate-270" />
           </div> */}
-          <div className="text-[#3F3EED] font-bold">Welcome Back</div>
+          <div className="text-blue-900 font-bold">Welcome Back</div>
         </div>
 
         {/* Title */}
@@ -86,7 +86,7 @@ const SignIn: React.FC = () => {
             type="email"
             placeholder="You@example.com"
             {...register("email", { required: "Email is required" })}
-            className="w-full px-4 py-2 mb-1 border border-gray-300 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#3F3EED] placeholder-gray-300"
+            className="w-full px-4 py-2 mb-1 border border-gray-300 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-900 placeholder-gray-300"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
@@ -101,7 +101,7 @@ const SignIn: React.FC = () => {
             type="password"
             placeholder="Password"
             {...register("password", { required: "Password is required" })}
-            className="w-full px-4 py-2 mb-1 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] placeholder-gray-300"
+            className="w-full px-4 py-2 mb-1 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-1 focus:ring-blue-900 placeholder-gray-300"
           />
           {errors.password && (
             <p className="text-red-500 text-sm mb-5">
@@ -123,7 +123,7 @@ const SignIn: React.FC = () => {
           type="submit"
           disabled={loginLoading}
           // className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#6d0f78] to-[#0a0f2d] text-white py-2 rounded-lg transition-all cursor-pointer ${
-          className={`w-full flex items-center justify-center gap-2 bg-[#3F3EED] text-white py-2 rounded-lg transition-all cursor-pointer ${
+          className={`w-full flex items-center justify-center gap-2 bg-blue-900 text-white py-2 rounded-lg transition-all cursor-pointer ${
             loginLoading ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
@@ -164,7 +164,7 @@ const SignIn: React.FC = () => {
           Don’t have an account?{" "}
           <button
             // className="text-green-600 cursor-pointer hover:underline"
-            className="text-[#3F3EED] cursor-pointer hover:underline"
+            className="text-blue-900 cursor-pointer hover:underline"
             onClick={handleNavigate}
           >
             Sign up now

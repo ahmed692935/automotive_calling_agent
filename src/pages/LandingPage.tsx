@@ -17,13 +17,27 @@ import UseCases from "../components/LandingPageCards/UseCases.tsx";
 function LandingPage() {
   return (
     <>
-      <LandHeroSection />
+      {/* <LandHeroSection /> */}
+      <section id="home">
+        <LandHeroSection />
+      </section>
       <BannerLand />
       <CallAction />
-      <UseCases />
-      <KeyBenefits />
-      <ThreeSteps />
-      <FooterLanding />
+      {/* <UseCases /> */}
+      <section id="about">
+        <UseCases />
+      </section>
+      {/* <KeyBenefits /> */}
+      <section id="services">
+        <KeyBenefits />
+      </section>
+      <section id="use">
+        <ThreeSteps />
+      </section>
+      {/* <FooterLanding /> */}
+      <section id="contact">
+        <FooterLanding />
+      </section>
     </>
   );
 }

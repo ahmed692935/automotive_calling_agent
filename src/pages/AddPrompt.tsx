@@ -189,8 +189,8 @@ const AddPrompt = () => {
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-10">
-      <div className="w-full max-w-2xl p-7">
-        <h1 className="text-2xl font-bold text-center mb-10 text-[#3F3EED]">
+      <div className="w-full md:max-w-7xl p-2 md:p-7">
+        <h1 className="text-2xl font-bold text-center mb-10 text-blue-900">
           Prompt Manager
         </h1>
         <p className="text-gray-600 text-center mb-8">
@@ -203,40 +203,47 @@ const AddPrompt = () => {
           onChange={(e) => setPrompt(e.target.value)}
           rows={3}
           placeholder="Type your prompt here..."
-          className="w-full border border-[#3F3EED] rounded-sm px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] mb-4 resize-none"
+          className="w-full border border-blue-900 rounded-sm px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-900 mb-4 resize-none"
         />
 
         {/* ✅ Loader-enabled Button */}
         <button
           onClick={handleAddOrUpdate}
           disabled={!prompt.trim() || isSubmitting}
-          className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 text-white font-medium transition-all ${
+          className={`relative w-full flex items-center justify-center gap-2 rounded-xl py-3 text-white font-medium overflow-hidden transition-all ${
             !prompt.trim() || isSubmitting
-              ? "bg-[#3F3EED]/50 cursor-not-allowed"
-              : "bg-[#3F3EED] hover:bg-[#2d2ce0]"
+              ? "bg-blue-900/50 cursor-not-allowed"
+              : "bg-blue-900 hover:bg-[0A0C3F] cursor-pointer"
           }`}
         >
-          {isSubmitting ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : isEditing ? (
-            <FiCheck />
-          ) : (
-            <FiPlus />
+          {/* White light overlay on hover */}
+          {!isSubmitting && prompt.trim() && (
+            <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
           )}
-          {isSubmitting
-            ? "Saving..."
-            : isEditing
-            ? "Update Prompt"
-            : "Add Prompt"}
+
+          <span className="relative z-10 flex items-center gap-2">
+            {isSubmitting ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : isEditing ? (
+              <FiCheck />
+            ) : (
+              <FiPlus />
+            )}
+            {isSubmitting
+              ? "Saving..."
+              : isEditing
+              ? "Update Prompt"
+              : "Add Prompt"}
+          </span>
         </button>
 
         {/* ✅ Table Section */}
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-[#3F3EED] mb-3">
+          <h2 className="text-lg font-semibold text-blue-900 mb-3">
             Saved Prompt
           </h2>
-          <table className="w-full border border-[#3F3EED] rounded-xl overflow-hidden">
-            <thead className="bg-[#3F3EED]/10 text-[#3F3EED] text-left">
+          <table className="w-full border border-blue-900 rounded-xl overflow-hidden">
+            <thead className="bg-blue-900/10 text-blue-900 text-left">
               <tr>
                 <th className="py-2 px-4">Prompt</th>
                 <th className="py-2 px-4 text-center">Actions</th>
@@ -250,18 +257,18 @@ const AddPrompt = () => {
                     className="py-6 text-center text-gray-500 italic"
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 border-2 border-[#3F3EED] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-blue-900 border-t-transparent rounded-full animate-spin" />
                       Loading prompt...
                     </div>
                   </td>
                 </tr>
               ) : savedPrompt ? (
-                <tr className="border-t border-[#3F3EED]/20">
+                <tr className="border-t border-blue-900/20">
                   <td className="py-3 px-4 text-gray-700">{savedPrompt}</td>
                   <td className="py-3 px-4 text-center flex justify-center gap-4">
                     <button
                       onClick={handleEditPrompt}
-                      className="text-[#3F3EED] hover:text-[#2d2ce0] transition-colors cursor-pointer"
+                      className="text-blue-900 hover:text-blue-900 transition-colors cursor-pointer"
                     >
                       <FiEdit2 size={18} />
                     </button>
