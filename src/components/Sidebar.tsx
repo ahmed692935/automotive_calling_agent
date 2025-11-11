@@ -111,6 +111,10 @@ const Sidebar = () => {
     { label: "Add Prompt", path: "/add-prompt" },
   ];
 
+  const handleNavigate = () => {
+    navigate("/landing-page");
+  };
+
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem("user");
@@ -132,7 +136,12 @@ const Sidebar = () => {
         } fixed lg:static top-0 left-0 min-h-[100vh] w-64 bg-white text-black transform lg:translate-x-0 transition-transform duration-300 z-50`}
       >
         <div className="flex items-center justify-between p-4 border-b border-black">
-          <img src={Logo} width={150} />
+          <img
+            src={Logo}
+            width={150}
+            onClick={handleNavigate}
+            className="cursor-pointer"
+          />
           <button
             className="lg:hidden text-black"
             onClick={() => setOpen(false)}
