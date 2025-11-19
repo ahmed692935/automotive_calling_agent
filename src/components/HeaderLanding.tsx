@@ -19,7 +19,7 @@ function HeaderLanding() {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
-      setMenuOpen(false); // close mobile menu if open
+      setMenuOpen(false);
     }
   };
 
