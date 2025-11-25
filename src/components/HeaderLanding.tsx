@@ -197,20 +197,60 @@ function HeaderLanding() {
 
             {/* Auth Buttons */}
             <div className="flex flex-col space-y-3 w-[80%] mt-10">
-              <Link
-                to="/signup"
-                onClick={() => setMenuOpen(false)}
-                className="bg-blue-900 text-white py-2 rounded-md font-semibold hover:bg-blue-800 text-center transition-all"
-              >
-                Sign Up
-              </Link>
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="bg-white border border-blue-900 text-blue-900 py-2 rounded-md font-semibold hover:bg-blue-900 hover:text-white text-center transition-all"
-              >
-                Login
-              </Link>
+              {user ? (
+                <div className="relative w-full">
+                  <button
+                    onClick={() => setOpenDropdown(!openDropdown)}
+                    className="flex items-center justify-between w-full px-4 py-2 rounded-md border border-[#13243C] bg-[#13243C] text-white font-semibold cursor-pointer"
+                  >
+                    <span>{user.email.slice(0, 5)}...</span>
+                    <FaChevronDown />
+                  </button>
+
+                  {openDropdown && (
+                    <div className="absolute top-12 left-0 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 flex flex-col">
+                      <div className="px-4 py-2 border-b text-gray-700">
+                        {user.email}
+                      </div>
+
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setMenuOpen(false)}
+                        className="px-4 py-2 hover:bg-gray-100 text-gray-700"
+                      >
+                        Dashboard
+                      </Link>
+
+                      <button
+                        onClick={() => {
+                          dispatch(logout());
+                          setMenuOpen(false);
+                        }}
+                        className="px-4 py-2 hover:bg-gray-100 text-gray-700 text-left w-full cursor-pointer"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMenuOpen(false)}
+                    className="bg-blue-900 text-white py-2 rounded-md font-semibold hover:bg-blue-800 text-center transition-all"
+                  >
+                    Sign Up
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="bg-white border border-blue-900 text-blue-900 py-2 rounded-md font-semibold hover:bg-blue-900 hover:text-white text-center transition-all"
+                  >
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
