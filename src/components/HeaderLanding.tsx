@@ -39,7 +39,7 @@ function HeaderLanding() {
     <>
       {/* Header */}
       <header
-        className={`fixed top-0 left-0 w-full h-16 sm:h-20 z-50 transition-all duration-300 px-4 md:px-8  ${
+        className={`fixed top-0 left-0 w-full h-16 sm:h-20 z-50 transition-all duration-300 px-4 md:px-8 ${
           isScrolled ? "bg-white shadow-md" : "bg-transparent"
         }`}
       >
