@@ -105,8 +105,7 @@ function UseCases() {
           viewport={{ once: true }}
           className="mt-20 p-8 glass rounded-[3rem] border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden group"
         >
-          <div className="absolute inset-0 bg-brand-primary/5 translate-x-full group-hover:translate-x-0 transition-transform duration-1000" />
-          
+         
           <div className="relative z-10 flex flex-col items-center md:items-start">
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Ready to transform your workflow?</h3>
             <p className="text-slate-400">Join 100+ businesses automating their calls today.</p>
