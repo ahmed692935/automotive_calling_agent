@@ -1,64 +1,119 @@
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { CheckCircle2, Play, BarChart4, ArrowRight } from "lucide-react";
 
 function ThreeSteps() {
   const steps = [
     {
       title: "Assign a Task",
-      desc: "Set up your call requirements—whether it’s sales, support, follow-ups, or reminders.",
+      desc: "Set up your requirements—from sales to support follow-ups.",
+      icon: <Play className="text-brand-primary" size={24} />,
+      color: "from-blue-500/20 to-cyan-500/0"
     },
     {
       title: "AI Takes Over",
-      desc: "Suma.ai dials, engages, and responds in real-time, handling interactions just like a human.",
+      desc: "Suma.ai dials and engages in real-time, just like a human expert.",
+      icon: <CheckCircle2 className="text-brand-secondary" size={24} />,
+      color: "from-indigo-500/20 to-purple-500/0"
     },
     {
       title: "Track & Optimize",
-      desc: "Access instant call transcripts, insights, and analytics to continuously improve conversations.",
+      desc: "Access instant transcripts and insights to improve every call.",
+      icon: <BarChart4 className="text-brand-accent" size={24} />,
+      color: "from-rose-500/20 to-orange-500/0"
     },
   ];
 
   return (
-    <section className="flex flex-col items-center px-4 py-12 md:px-16 text-center bg-white overflow-hidden">
-      {/* Section Header */}
-      <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] font-bold mb-2 text-gray-900">
-        3 Easy Steps to Smarter, AI-Powered Calls
-      </h2>
-      <p className="text-blue-900 text-[clamp(0.875rem,2vw,1rem)] mb-8">
-        Boost Engagement and Drive Results with Suma.ai
-      </p>
+    <section id="use" className="relative py-24 px-6 md:px-12 bg-[#020617] overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-primary/5 blur-[120px] rounded-full" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-secondary/5 blur-[120px] rounded-full" />
 
-      {/* Steps Grid */}
-      <div className="flex flex-wrap justify-center items-center gap-6 w-full px-3 sm:px-4">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className="
-        relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl
-        bg-gradient-to-r from-[#382b86] to-[#00021D] text-white
-        flex flex-col justify-center items-center text-center
-        w-[260px] h-[260px] sm:w-[240px] sm:h-[240px] md:w-[250px] md:h-[250px]
-        max-[400px]:w-[220px] max-[400px]:h-[220px] max-[350px]:w-[200px] max-[350px]:h-[200px]
-        transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
-        animate-gradient-move
-      "
+      <div className="relative max-w-7xl mx-auto z-10">
+        {/* Section Header */}
+        <div className="text-center mb-20">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-6xl font-black text-white mb-6"
           >
-            <h3 className="font-bold text-[clamp(1rem,2.5vw,1.125rem)] text-white drop-shadow-sm">
-              {step.title}
-            </h3>
-            <p className="mt-2 text-[clamp(0.75rem,2vw,0.875rem)] text-gray-200 max-w-[10rem]">
-              {step.desc}
-            </p>
-          </div>
-        ))}
-      </div>
+            3 Steps to <span className="text-gradient">Automation.</span>
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto"
+          >
+            Boost engagement and drive results effortlessly with our 
+            streamlined AI integration process.
+          </motion.p>
+        </div>
 
-      <p className="text-center text-gray-800 mt-8 text-sm md:text-base">
-        It’s that simple!
-      </p>
-      <Link to="/login">
-        <button className="text-blue-900 text-base font-semibold bg-white px-6 py-3 rounded-md border border-2 border-blue-900 hover:bg-blue-900 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer mt-6">
-          <span>Try Suma.ai Today</span>
-        </button>
-      </Link>
+        {/* Steps Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          {/* Connector Line (Desktop) */}
+          <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-slate-800 to-transparent -translate-y-12" />
+
+          {steps.map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.2 }}
+              className="relative group"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-b ${step.color} rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              
+              <div className="relative glass border-slate-800 rounded-[2.5rem] p-10 flex flex-col items-center text-center h-full hover:border-slate-700 transition-all duration-300">
+                {/* Step Number Badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center font-black text-brand-primary text-sm shadow-2xl">
+                  0{index + 1}
+                </div>
+
+                {/* Icon Circle */}
+                <div className="w-16 h-16 rounded-3xl glass border-slate-700 flex items-center justify-center mb-8 shadow-inner group-hover:scale-110 transition-transform">
+                  {step.icon}
+                </div>
+
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                  {step.title}
+                </h3>
+                
+                <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="mt-20 flex flex-col items-center"
+        >
+          <div className="text-slate-500 font-bold tracking-[4px] uppercase text-[10px] mb-8">It's really that simple</div>
+          
+          <Link to="/login">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-12 py-5 glass border-slate-700 hover:border-brand-primary text-white font-black rounded-full flex items-center justify-center gap-3 transition-colors group"
+            >
+              Get Started with Suma.ai
+              <ArrowRight className="text-brand-primary group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+          </Link>
+        </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,212 +1,137 @@
-// function FooterLanding() {
-//   const footerLinks = {
-//     Company: [
-//       { label: "Home", href: "/" },
-//       // { label: "About Us", href: "#" },
-//       { label: "Contact Us", href: "#" },
-//       // { label: "Privacy Policy", href: "#" },
-//       { label: "Terms of Use", href: "#" },
-//     ],
-//     // "Agentic AI": [
-//     //   { label: "AI Contact Center", href: "#" },
-//     //   { label: "AI Sales", href: "#" },
-//     //   { label: "AI Communication", href: "#" },
-//     // ],
-//     "Solutions by Industries": [
-//       { label: "Insurance", href: "#" },
-//       { label: "Education", href: "#" },
-//       { label: "Healthcare", href: "#" },
-//       { label: "Real Estate", href: "#" },
-//       { label: "Recruiting", href: "#" },
-//       { label: "Technology", href: "#" },
-//       //   { label: "Professional Services", href: "#" },
-//       //   { label: "Retail", href: "#" },
-//       //   { label: "Automotive", href: "#" },
-//     ],
-//     // Resources: [
-//     //   { label: "Partnership", href: "#" },
-//     //   { label: "Comparison", href: "#" },
-//     //   { label: "Enterprise Solution", href: "#" },
-//     // ],
-//     "Contact Us": [{ label: "test@gmail.com", href: "#" }],
-//   };
-
-//   //   const socialLinks = [
-//   //     { href: "#", icon: "lucide-facebook" },
-//   //     { href: "#", icon: "lucide-linkedin" },
-//   //     { href: "#", icon: "lucide-twitter" },
-//   //     { href: "#", icon: "lucide-instagram" },
-//   //   ];
-
-//   return (
-//     <>
-//       <footer className="text-gray-700 py-10 mt-10 w-full bg-gradient-to-b from-[#382b86] to-[#00021D]">
-//         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-//           {/* Logo */}
-//           <div className="flex justify-center md:justify-start mb-8">
-//             <a href="/" className="text-2xl text-white font-bold">
-//               Paul.<span className="font-semibold text-white">Calling</span>
-//             </a>
-//           </div>
-
-//           {/* Footer Grid */}
-//           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 text-center md:text-left">
-//             {Object.entries(footerLinks).map(([section, links]) => (
-//               <div key={section}>
-//                 <h3 className="font-semibold mb-4 text-white">{section}</h3>
-
-//                 {section !== "Contact Us" ? (
-//                   <ul className="space-y-2">
-//                     {links.map(({ label, href }) => (
-//                       <li key={label}>
-//                         <a
-//                           href={href}
-//                           className="text-xs text-white hover:text-blue-500 transition-colors"
-//                         >
-//                           {label}
-//                         </a>
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 ) : (
-//                   <div className="flex flex-col items-center md:items-start space-y-3">
-//                     <a
-//                       href={links[0].href}
-//                       className="text-sm text-white hover:text-blue-500 transition-colors"
-//                     >
-//                       {links[0].label}
-//                     </a>
-//                     {/* Social Icons */}
-//                     {/* <div className="flex justify-center md:justify-start space-x-4 mt-2">
-//                       {socialLinks.map(({ href, icon }) => (
-//                         <a
-//                           key={href}
-//                           href={href}
-//                           target="_blank"
-//                           rel="noopener noreferrer"
-//                           className="text-white transition-colors"
-//                         >
-//                           <i className={`lucide ${icon}`} />
-//                         </a>
-//                       ))}
-//                     </div> */}
-//                   </div>
-//                 )}
-//               </div>
-//             ))}
-//           </div>
-
-//           {/* Bottom */}
-//           <div className="border-t border-gray-200 mt-10 pt-6">
-//             <p className="text-center text-sm text-white">
-//               ©{new Date().getFullYear()} | All rights reserved by Suma.ai
-//             </p>
-//           </div>
-//         </div>
-//       </footer>
-//     </>
-//   );
-// }
-
-// export default FooterLanding;
-
-// import SumaWhite from "../../public/images/SumaWhite.jpeg";
+import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
+import { Mail, ArrowUpRight } from "lucide-react";
+import SumaLogo from "/images/SumaWhite.jpeg";
 
 function FooterLanding() {
   const footerLinks = {
     Company: [
-      { label: "Home", href: "/" },
-      { label: "Contact Us", href: "#contact" },
-      { label: "Terms of Use", href: "#use" },
+      { label: "Home", href: "/#home" },
+      { label: "About Us", href: "/#about" },
+      { label: "Services", href: "/#services" },
+      { label: "Contact", href: "/#contact" },
     ],
-    "Solutions by Industries": [
-      { label: "Insurance", href: "#about" },
-      { label: "Education", href: "#about" },
-      { label: "Healthcare", href: "#about" },
-      { label: "Real Estate", href: "#about" },
-      { label: "Recruiting", href: "#about" },
-      { label: "Technology", href: "#about" },
+    Industries: [
+      { label: "Insurance", href: "#" },
+      { label: "Real Estate", href: "#" },
+      { label: "Healthcare", href: "#" },
+      { label: "Education", href: "#" },
+      { label: "E-commerce", href: "#" },
     ],
-    "Contact Us": [{ label: "pia@bysuma.com", href: "#" }],
+    Legal: [
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+      { label: "Cookie Policy", href: "#" },
+    ],
   };
 
+  const socialLinks = [
+    { icon: <FaFacebook size={18} />, href: "#" },
+    { icon: <FaTwitter size={18} />, href: "#" },
+    { icon: <FaLinkedin size={18} />, href: "#" },
+    { icon: <FaInstagram size={18} />, href: "#" },
+  ];
+
   return (
-    <footer className="text-gray-700 py-10 mt-10 w-full bg-gradient-to-b from-[#382b86] to-[#00021D]">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
-          {/* 1️⃣ Logo + Description */}
-          <div>
-            <a
-              href="/"
-              className="text-2xl text-white font-bold mb-3 inline-block"
-            >
-              Suma.<span className="font-semibold text-white">ai</span>
-              {/* <img
-                src={SumaWhite}
-                alt="Paul Logo"
-                className="h-6 sm:h-8 transition-transform duration-200"
-              /> */}
+    <footer className="relative bg-[#020617] pt-24 pb-12 px-6 md:px-12 overflow-hidden border-t border-slate-900">
+      {/* Decorative Glow */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      
+      <div className="relative max-w-7xl mx-auto z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+          
+          {/* Logo & About */}
+          <div className="lg:col-span-4 max-w-sm">
+            <a href="/" className="group inline-block">
+              <img
+                src={SumaLogo}
+                alt="Suma Logo"
+                className="h-10 w-auto mb-6 rounded-lg transition-transform group-hover:scale-105"
+              />
             </a>
-            <p className="text-xs text-white mt-2">
-              Suma.ai helps you automate your calls, improve conversations, and
-              save time with AI-powered calling solutions.
+            <p className="text-slate-400 text-sm leading-relaxed mb-8">
+              Suma.ai is the next generation of AI calling agents. We combine 
+              cutting-edge NLP with human-like conversation DNA to transform 
+              how businesses communicate.
             </p>
+            <div className="flex gap-4">
+              {socialLinks.map((social, i) => (
+                <a 
+                  key={i} 
+                  href={social.href} 
+                  className="w-10 h-10 rounded-xl glass border-slate-800 flex items-center justify-center text-slate-400 hover:text-brand-primary hover:border-brand-primary transition-all shadow-xl"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* 2️⃣ Company Links */}
-          <div>
-            <h3 className="font-semibold mb-4 text-white">Company</h3>
-            <ul className="space-y-2">
-              {footerLinks.Company.map(({ label, href }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    className="text-xs text-white hover:text-blue-500 transition-colors"
-                  >
-                    {label}
+          {/* Links Sections */}
+          <div className="lg:col-span-2">
+            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Company</h4>
+            <ul className="flex flex-col gap-4">
+              {footerLinks.Company.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors flex items-center gap-1 group">
+                    {link.label}
+                    <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all -translate-y-1" />
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* 3️⃣ Solutions by Industries */}
-          <div>
-            <h3 className="font-semibold mb-4 text-white">
-              Solutions by Industries
-            </h3>
-            <ul className="space-y-2">
-              {footerLinks["Solutions by Industries"].map(({ label, href }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    className="text-xs text-white hover:text-blue-500 transition-colors"
-                  >
-                    {label}
+          <div className="lg:col-span-2">
+            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Industries</h4>
+            <ul className="flex flex-col gap-4">
+              {footerLinks.Industries.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors">
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* 4️⃣ Contact */}
-          <div>
-            <h3 className="font-semibold mb-4 text-white">Contact</h3>
-            <a
-              href={`mailto:${footerLinks["Contact Us"][0].label}`}
-              className="text-sm text-white hover:text-blue-500 transition-colors"
-            >
-              <span className="text-blue-500">Email us:</span>{" "}
-              {footerLinks["Contact Us"][0].label}
-            </a>
+          <div className="lg:col-span-2">
+            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Legal</h4>
+            <ul className="flex flex-col gap-4">
+              {footerLinks.Legal.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact & Newsletter */}
+          <div className="lg:col-span-2">
+            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Support</h4>
+            <div className="flex flex-col gap-4">
+              <a href="mailto:pia@bysuma.com" className="flex items-center gap-3 glass border-slate-800 p-4 rounded-2xl hover:border-brand-primary transition-all group">
+                <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                  <Mail size={16} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase">Email Us</p>
+                  <p className="text-xs font-bold text-white group-hover:text-brand-primary">pia@bysuma.com</p>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="border-t border-gray-200 mt-10 pt-6">
-          <p className="text-center text-sm text-white">
-            ©{new Date().getFullYear()} | All rights reserved by Suma.ai
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-slate-500 text-xs">
+            © {new Date().getFullYear()} Suma.ai. All rights reserved.
           </p>
+          <div className="flex gap-8">
+            <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest">Built for the future of calling</p>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface LandCardProps {
   icon?: React.ReactNode;
@@ -9,6 +10,7 @@ interface LandCardProps {
   desc?: string;
   className?: string;
   children?: React.ReactNode;
+  index?: number;
 }
 
 const LandCard: React.FC<LandCardProps> = ({
@@ -20,44 +22,75 @@ const LandCard: React.FC<LandCardProps> = ({
   desc,
   className = "",
   children,
+  index = 0,
 }) => {
   return (
-    <div
-      className={`border border-blue-900 rounded-xl p-6 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center text-center ${className}`}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ 
+        y: -10, 
+        backgroundColor: "rgba(30, 41, 59, 0.6)",
+        borderColor: "rgba(14, 165, 233, 0.4)"
+      }}
+      className={`relative group glass rounded-[2rem] p-8 flex flex-col items-center text-center transition-all duration-300 ${className}`}
     >
-      {/* Image or Icon */}
-      {img ? (
-        <img
-          src={img}
-          alt={title || "Card image"}
-          className="h-12 w-12 mb-3"
-          loading="lazy"
-        />
-      ) : (
-        icon && <div className="mb-3 text-3xl text-blue-900">{icon}</div>
-      )}
+      {/* Decorative Blur Background on hover */}
+      <div className="absolute inset-0 bg-brand-primary/5 opacity-0 group-hover:opacity-100 blur-3xl transition-opacity rounded-[2rem]" />
 
-      {/* Title */}
-      {title && (
-        <h3 className="text-sm font-semibold mb-2 text-black">{title}</h3>
-      )}
+      {/* Image or Icon Container */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 bg-brand-primary/20 blur-2xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500" />
+        {img ? (
+          <img
+            src={img}
+            alt={title || "Card image"}
+            className="h-16 w-16 object-contain relative z-10"
+            loading="lazy"
+          />
+        ) : (
+          icon && (
+            <div className="text-4xl text-brand-primary relative z-10">
+              {icon}
+            </div>
+          )
+        )}
+      </div>
 
-      {/* Sub Title */}
-      {subtitle && (
-        <h3 className="text-lg font-semibold mb-2 text-blue-900">{subtitle}</h3>
-      )}
+      {/* Content */}
+      <div className="relative z-10 w-full">
+        {title && (
+          <p className="text-[10px] uppercase tracking-[3px] font-black text-brand-primary mb-3">
+            {title}
+          </p>
+        )}
 
-      {/* Value (Optional) */}
-      {value && (
-        <p className="font-bold text-3xl text-blue-900 mt-1 mb-1">{value}</p>
-      )}
+        {subtitle && (
+          <h3 className="text-xl md:text-2xl font-bold mb-4 text-white leading-snug">
+            {subtitle}
+          </h3>
+        )}
 
-      {/* Description */}
-      {desc && <p className="text-gray-800 text-sm">{desc}</p>}
+        {value && (
+          <p className="font-black text-4xl text-gradient mt-2 mb-4">
+            {value}
+          </p>
+        )}
 
-      {/* Custom Children */}
-      {children && <div className="mt-2">{children}</div>}
-    </div>
+        {desc && (
+          <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+            {desc}
+          </p>
+        )}
+
+        {children && <div className="mt-6 w-full">{children}</div>}
+      </div>
+      
+      {/* Corner Accent */}
+      <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-brand-primary transition-colors" />
+    </motion.div>
   );
 };
 

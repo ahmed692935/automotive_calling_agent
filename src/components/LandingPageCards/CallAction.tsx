@@ -1,50 +1,78 @@
-// import LandCard from "../components/LandCard";
-
+import { motion } from "framer-motion";
 import LandCard from "../LandCard";
 
 function CallAction() {
   const callStats = [
     {
-      title: "Quick to Access",
-      value: "1 Day",
-      desc: "Average time from contract to project kick-off with Suma.ai",
+      title: "Speed to Launch",
+      value: "24 Hours",
+      desc: "Average time from setup to your first live AI-powered call campaign.",
     },
     {
-      title: "Quality of Services",
-      value: "50% Savings",
-      desc: "Achieve significant cost reductions through smarter, AI-driven actions",
+      title: "Resource Efficiency",
+      value: "60% Savings",
+      desc: "Drastically reduce overhead costs while increasing your outbound capacity.",
     },
     {
-      title: "Queue-Free",
-      value: "50+ Features",
-      desc: "Comprehensive tools available for all your essential calling tasks",
+      title: "Feature Rich",
+      value: "100+ Tools",
+      desc: "From sentiment analysis to live CRM sync, we have everything you need.",
     },
   ];
 
   return (
-    <section className="py-16 px-4 md:px-8 bg-white text-center">
-      <div className="flex flex-col items-center">
-        <span className="px-4 py-1 border border-blue-900 rounded-full text-xs text-black">
-          The Core of Suma.ai
-        </span>
-        <h2 className="text-3xl md:text-4xl font-bold text-black mt-4">
-          Making Every Call Effortless
-        </h2>
-        <p className="text-blue-900 text-base md:text-lg mt-2">
-          Enhancing Engagement and Delivering Results
-        </p>
-      </div>
+    <section className="relative py-24 px-6 md:px-12 bg-[#020617] overflow-hidden">
+      {/* Background Accent */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-primary/5 blur-[150px] rounded-full pointer-events-none" />
 
-      {/* Cards */}
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {callStats.map((item, i) => (
-          <LandCard
-            key={i}
-            title={item.title}
-            value={item.value}
-            desc={item.desc}
-          />
-        ))}
+      <div className="relative max-w-7xl mx-auto z-10">
+        {/* Header */}
+        <div className="flex flex-col items-center text-center mb-16">
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="px-4 py-1.5 glass border-brand-primary/20 rounded-full text-[10px] md:text-xs font-bold text-brand-primary uppercase tracking-[3px] mb-6"
+          >
+            The Suma Edge
+          </motion.span>
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl md:text-5xl font-black text-white leading-tight"
+          >
+            Making Every Interaction <br />
+            <span className="text-gradient">Effortless.</span>
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-400 text-lg md:text-xl mt-6 max-w-2xl"
+          >
+            We don't just automate calls; we enhance human connection with 
+            intelligence and speed.
+          </motion.p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {callStats.map((item, i) => (
+            <LandCard
+              key={i}
+              index={i}
+              title={item.title}
+              value={item.value}
+              desc={item.desc}
+              className="bg-slate-900/40 border-slate-800"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

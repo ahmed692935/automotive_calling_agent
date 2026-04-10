@@ -1,44 +1,44 @@
-// import { lazy } from "react";
-import BannerLand from "../components/BannerLand";
-import FooterLanding from "../components/FooterLanding";
-import LandHeroSection from "../components/LandHeroSection.tsx";
-import CallAction from "../components/LandingPageCards/CallAction.tsx";
-import KeyBenefits from "../components/LandingPageCards/KeyBenefits.tsx";
-import ThreeSteps from "../components/LandingPageCards/ThreeSteps.tsx";
-import UseCases from "../components/LandingPageCards/UseCases.tsx";
+import { lazy, Suspense } from "react";
 
-// const BannerLand = lazy(() => import("../components/BannerLand"));
-// const CallAction = lazy(() => import("../LandingPageCards/CallAction"));
-// const UseCases = lazy(() => import("../LandingPageCards/UseCases"));
-// const KeyBenefit = lazy(() => import("../LandingPageCards/KeyBenefits"));
-// const ThreeStep = lazy(() => import("../LandingPageCards/ThreeSteps"));
-// const FooterLand = lazy(() => import("../components/FooterLanding"));
+const BannerLand = lazy(() => import("../components/BannerLand"));
+const FooterLanding = lazy(() => import("../components/FooterLanding"));
+const LandHeroSection = lazy(() => import("../components/LandHeroSection.tsx"));
+const CallAction = lazy(() => import("../components/LandingPageCards/CallAction.tsx"));
+const KeyBenefits = lazy(() => import("../components/LandingPageCards/KeyBenefits.tsx"));
+const ThreeSteps = lazy(() => import("../components/LandingPageCards/ThreeSteps.tsx"));
+const UseCases = lazy(() => import("../components/LandingPageCards/UseCases.tsx"));
+const CustomCursor = lazy(() => import("../components/CustomCursor.tsx"));
 
 function LandingPage() {
   return (
-    <>
-      {/* <LandHeroSection /> */}
+    <div className="relative bg-[#020617] md:cursor-none">
+      <Suspense fallback={null}>
+        <CustomCursor />
+      </Suspense>
+
       <section id="home">
-        <LandHeroSection />
+        <Suspense fallback={<div className="h-screen bg-[#020617]" />}>
+          <LandHeroSection />
+        </Suspense>
       </section>
-      <BannerLand />
-      <CallAction />
-      {/* <UseCases /> */}
-      <section id="about">
-        <UseCases />
-      </section>
-      {/* <KeyBenefits /> */}
-      <section id="services">
-        <KeyBenefits />
-      </section>
-      <section id="use">
-        <ThreeSteps />
-      </section>
-      {/* <FooterLanding /> */}
-      <section id="contact">
-        <FooterLanding />
-      </section>
-    </>
+
+      <Suspense fallback={null}>
+        <BannerLand />
+        <CallAction />
+        <section id="about">
+          <UseCases />
+        </section>
+        <section id="services">
+          <KeyBenefits />
+        </section>
+        <section id="use">
+          <ThreeSteps />
+        </section>
+        <section id="contact">
+          <FooterLanding />
+        </section>
+      </Suspense>
+    </div>
   );
 }
 
