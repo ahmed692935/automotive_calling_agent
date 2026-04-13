@@ -1,8 +1,5 @@
-// import { FiDownload } from "react-icons/fi";
-// import Logo from "../../../public/images/sumaLogo.png";
 import { useForm, type SubmitHandler } from "react-hook-form";
-// import { TiArrowRight } from "react-icons/ti";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { loginStart, loginSuccess } from "../../store/slices/authSlice";
@@ -10,6 +7,10 @@ import { loginUser } from "../../api/auth";
 import type { SignInData } from "../../interfaces/auth";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
+import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Loader2, Mail, Lock } from "lucide-react";
+
+const SumaLogo = "/images/SumaWhite.jpeg";
 
 const SignIn: React.FC = () => {
   const {
@@ -24,18 +25,13 @@ const SignIn: React.FC = () => {
   const { loginLoading } = useSelector((state: RootState) => state.auth);
 
   const onSubmit: SubmitHandler<SignInData> = async (data: SignInData) => {
-    console.log(data, "Data");
     try {
       dispatch(loginStart());
       const response = await loginUser(data);
-      console.log(response, "LOGIN RESPONSE");
-
-      // ✅ Extract token + user from API response
       const token = response.access_token;
       const user = { ...response.user, access_token: token };
 
       dispatch(loginSuccess({ user, token }));
-
       toast.success("Sign-in successful!");
       navigate("/dashboard");
       reset();
@@ -48,131 +44,137 @@ const SignIn: React.FC = () => {
     }
   };
 
-  const handleNavigate = () => {
-    navigate("/signup");
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white shadow-lg rounded-xl p-5 md:p-8 w-full max-w-md text-center m-5 md:p-0"
+    <div className="min-h-screen relative flex items-center justify-center bg-[#020617] p-6 overflow-hidden">
+      {/* Background Mesh Gradients */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-secondary/10 blur-[120px] rounded-full" />
+
+      {/* Back to Home Link */}
+      <div className="absolute top-8 left-8 z-20">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+        >
+          <div className="p-2 glass rounded-lg group-hover:bg-slate-800/50 transition-all">
+            <ArrowLeft size={18} />
+          </div>
+          <span className="text-sm font-medium">Back to Home</span>
+        </Link>
+      </div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md z-10"
       >
-        {/* Rotated Download Icon */}
-        <div className="flex justify-center mb-2 mt-5">
-          {/* <div className="bg-gradient-to-l from-[#05A3A9] to-[#6BEE2E] p-2 rounded-lg shadow-lg"> */}
-          {/* <div>
-            <img src={Logo} width={150}></img>
-          </div> */}
-          {/* <div className="bg-gradient-to-r from-[#6d0f78] to-[#0a0f2d] p-2 rounded-lg shadow-lg">
-            <FiDownload className="text-white text-4xl rotate-270" />
-          </div> */}
-          <div className="text-blue-900 font-bold">Welcome Back</div>
+        <div className="text-center mb-8">
+          <motion.div variants={itemVariants} className="inline-block mb-6">
+            <img src={SumaLogo} alt="Suma Logo" className="h-12 w-auto mx-auto rounded-xl shadow-2xl" />
+          </motion.div>
+          <motion.h2 variants={itemVariants} className="text-3xl font-black mb-2">
+            <span className="text-white">Welcome </span>
+            <span className="text-gradient">Back</span>
+          </motion.h2>
+          <motion.p variants={itemVariants} className="text-slate-400 text-sm">
+            Please enter your details to sign in
+          </motion.p>
         </div>
 
-        {/* Title */}
-        <div className="text-2xl font-bold text-gray-800 mb-2">
-          Login to continue
-        </div>
-        {/* <p className="text-gray-500 text-base mb-6 leading-tight">
-          Welcome back! Please sign in to your account
-        </p> */}
+        <motion.div variants={itemVariants} className="glass rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+          {/* Subtle glow effect on hover */}
+          <div className="absolute -inset-px bg-gradient-to-r from-brand-primary/20 to-brand-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm pointer-events-none" />
 
-        {/* Email */}
-        <label className=" block mb-5 font-semibold text-sm text-left">
-          {" "}
-          Email
-          <input
-            type="email"
-            placeholder="You@example.com"
-            {...register("email", { required: "Email is required" })}
-            className="w-full px-4 py-2 mb-1 border border-gray-300 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-900 placeholder-gray-300"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
-          )}
-        </label>
+          <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 space-y-6">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-300 ml-1">Email Address</label>
+              <div className="relative group/input">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  {...register("email", { required: "Email is required" })}
+                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-4 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
+                />
+              </div>
+              {errors.email && (
+                <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.email.message}</p>
+              )}
+            </div>
 
-        {/* Password */}
-        <label className=" block mb-8 font-semibold text-sm text-left">
-          {" "}
-          Password
-          <input
-            type="password"
-            placeholder="Password"
-            {...register("password", { required: "Password is required" })}
-            className="w-full px-4 py-2 mb-1 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-1 focus:ring-blue-900 placeholder-gray-300"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mb-5">
-              {errors.password.message}
-            </p>
-          )}
-        </label>
+            {/* Password Field */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-sm font-bold text-slate-300">Password</label>
+                <Link to="#" className="text-xs font-bold text-brand-primary hover:text-brand-primary/80 transition-colors">Forgot?</Link>
+              </div>
+              <div className="relative group/input">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  {...register("password", { required: "Password is required" })}
+                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-4 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
+                />
+              </div>
+              {errors.password && (
+                <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.password.message}</p>
+              )}
+            </div>
 
-        {/* Sign In Button */}
-        {/* <button
-          type="submit"
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#6d0f78] to-[#0a0f2d] text-white py-2 rounded-lg transition-all cursor-pointer"
-        >
-          Sign In
-          <TiArrowRight size={24} className="mt-1" />
-        </button> */}
-        {/* Sign In Button */}
-        <button
-          type="submit"
-          disabled={loginLoading}
-          // className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#6d0f78] to-[#0a0f2d] text-white py-2 rounded-lg transition-all cursor-pointer ${
-          className={`w-full flex items-center justify-center gap-2 bg-blue-900 text-white py-2 rounded-lg transition-all cursor-pointer ${
-            loginLoading ? "opacity-70 cursor-not-allowed" : ""
-          }`}
-        >
-          {loginLoading ? (
-            <>
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              disabled={loginLoading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`w-full py-4 btn-gradient text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-brand-primary/20 transition-all cursor-pointer ${loginLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+            >
+              {loginLoading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight size={18} />
+                </>
+              )}
+            </motion.button>
+
+            {/* Bottom text */}
+            <p className="text-center text-slate-400 text-sm mt-8">
+              Don’t have an account?{" "}
+              <button
+                type="button"
+                className="text-brand-primary font-bold hover:underline underline-offset-4"
+                onClick={() => navigate("/signup")}
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                ></path>
-              </svg>
-              <span>Signing In...</span>
-            </>
-          ) : (
-            <>
-              Sign In
-              {/* <TiArrowRight size={24} className="mt-1" /> */}
-            </>
-          )}
-        </button>
-
-        {/* Bottom text */}
-        <p className="mt-4 text-sm text-gray-500">
-          Don’t have an account?{" "}
-          <button
-            // className="text-green-600 cursor-pointer hover:underline"
-            className="text-blue-900 cursor-pointer hover:underline"
-            onClick={handleNavigate}
-          >
-            Sign up now
-          </button>
-        </p>
-        {/* {loading && <p className="text-red-500 mt-5">Signing In...</p>} */}
-        {/* {error && <p className="text-red-500">{error}</p>} */}
-      </form>
+                Create Account
+              </button>
+            </p>
+          </form>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

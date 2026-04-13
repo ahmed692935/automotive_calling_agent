@@ -12,9 +12,9 @@ interface Props {
 const PrivateRoute = ({ children }: Props) => {
   const user = useSelector((state: RootState) => state.auth.user);
 
-  // if (!user) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   // return children;
   return <Layout>{children}</Layout>;

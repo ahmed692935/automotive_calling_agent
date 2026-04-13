@@ -1,113 +1,9 @@
-// import { useState } from "react";
-// import { FiPlus, FiEdit2, FiCheck } from "react-icons/fi";
-// import { updateSystemPrompt } from "../api/Call";
-
-// const AddPrompt = () => {
-//   const [prompt, setPrompt] = useState("");
-//   const [savedPrompt, setSavedPrompt] = useState("");
-//   const [isEditing, setIsEditing] = useState(false);
-
-//   // const handleAddOrUpdate = () => {
-//   //   if (!prompt.trim()) return;
-//   //   setSavedPrompt(prompt.trim());
-//   //   setPrompt("");
-//   //   setIsEditing(false);
-//   // };
-
-//   const handleAddOrUpdate = async () => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       if (!token) return;
-
-//       const data = { system_prompt: prompt };
-//       const response = await updateSystemPrompt(data, token);
-//       setSavedPrompt(prompt.trim());
-//       console.log("Prompt updated successfully:", response);
-//     } catch (error) {
-//       console.error("Failed to update prompt:", error);
-//     }
-//   };
-
-//   const handleEditPrompt = () => {
-//     setPrompt(savedPrompt);
-//     setIsEditing(true);
-//   };
-
-//   return (
-//     <div className="flex flex-col items-center justify-center px-4 py-10">
-//       <div className="w-full max-w-2xl p-8">
-//         {/* Header Section */}
-//         <h1 className="text-4xl font-bold text-[#3F3EED] text-center mb-2">
-//           Prompt Manager
-//         </h1>
-//         <p className="text-gray-600 text-center mb-8">
-//           Add or edit your custom AI prompt below. You can only have one active
-//           prompt at a time.
-//         </p>
-
-//         {/* Input Section */}
-//         <textarea
-//           value={prompt}
-//           onChange={(e) => setPrompt(e.target.value)}
-//           rows={3}
-//           placeholder="Type your prompt here..."
-//           className="w-full border border-[#3F3EED] rounded-sm px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] mb-4 resize-none"
-//         />
-
-//         <button
-//           onClick={handleAddOrUpdate}
-//           disabled={!prompt.trim()}
-//           className={`w-full flex items-center justify-center cursor-pointer gap-2 rounded-xl py-3 text-white font-medium transition-all ${
-//             !prompt.trim()
-//               ? "bg-[#3F3EED]/50 cursor-not-allowed"
-//               : "bg-[#3F3EED] hover:bg-[#2d2ce0]"
-//           }`}
-//         >
-//           {isEditing ? <FiCheck /> : <FiPlus />}
-//           {isEditing ? "Update Prompt" : "Add Prompt"}
-//         </button>
-
-//         {/* Table Section */}
-//         {savedPrompt && (
-//           <div className="mt-8">
-//             <h2 className="text-lg font-semibold text-[#3F3EED] mb-3">
-//               Saved Prompt
-//             </h2>
-//             <table className="w-full border border-[#3F3EED] rounded-xl overflow-hidden">
-//               <thead className="bg-[#3F3EED]/10 text-[#3F3EED] text-left">
-//                 <tr>
-//                   <th className="py-2 px-4">Prompt</th>
-//                   <th className="py-2 px-4 text-center">Actions</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 <tr className="border-t border-[#3F3EED]/20">
-//                   <td className="py-3 px-4 text-gray-700">{savedPrompt}</td>
-//                   <td className="py-3 px-4 text-center flex justify-center gap-4">
-//                     <button
-//                       onClick={handleEditPrompt}
-//                       className="text-[#3F3EED] hover:text-[#2d2ce0] transition-colors cursor-pointer"
-//                     >
-//                       <FiEdit2 size={18} />
-//                     </button>
-//                   </td>
-//                 </tr>
-//               </tbody>
-//             </table>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AddPrompt;
-
 import { useEffect, useState } from "react";
-import { FiPlus, FiEdit2, FiCheck } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiCheck, FiTerminal, FiMessageSquare, FiLoader } from "react-icons/fi";
 import { updateSystemPrompt, getSystemPrompt } from "../api/Call";
 import type { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 interface SystemPromptResponse {
   system_prompt: string;
@@ -122,14 +18,13 @@ const AddPrompt = () => {
   const [savedPrompt, setSavedPrompt] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // ✅ Button loader state
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // ✅ Fetch existing prompt
   useEffect(() => {
     const fetchPrompt = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token") || "mock-token";
         if (!token) return;
 
         const response: SystemPromptResponse = await getSystemPrompt(token);
@@ -138,7 +33,6 @@ const AddPrompt = () => {
         }
       } catch (error) {
         console.error("Failed to fetch prompt:", error);
-        toast.error("Failed to load prompt.");
       } finally {
         setLoading(false);
       }
@@ -147,21 +41,19 @@ const AddPrompt = () => {
     fetchPrompt();
   }, []);
 
-  // ✅ Add or update prompt
   const handleAddOrUpdate = async (): Promise<void> => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token") || "mock-token";
       if (!token) return;
 
       setIsSubmitting(true);
       const data: UpdatePromptPayload = { system_prompt: prompt.trim() };
-      const response = await updateSystemPrompt(data, token);
+      await updateSystemPrompt(data, token);
 
       setSavedPrompt(prompt.trim());
       setPrompt("");
       setIsEditing(false);
-      toast.success("Prompt updated successfully!");
-      console.log("Response:", response);
+      toast.success("Prompt system updated successfully!");
     } catch (err) {
       const error = err as AxiosError<{
         detail?: { msg: string }[];
@@ -176,7 +68,6 @@ const AddPrompt = () => {
         "Oops! An unexpected error occurred.";
 
       toast.error(message);
-      console.error("Error:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -187,88 +78,126 @@ const AddPrompt = () => {
     setIsEditing(true);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-10">
-      <div className="w-full md:max-w-7xl p-2 md:p-7">
-        <h1 className="text-2xl font-bold text-center mb-10 text-blue-900">
-          Prompt Manager
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-4xl mx-auto space-y-12 pb-20"
+    >
+      {/* Header */}
+      <motion.div variants={itemVariants} className="text-center space-y-4">
+        <h1 className="text-4xl font-black tracking-tight">
+          <span className="text-white">Prompt </span>
+          <span className="text-gradient">Manager</span>
         </h1>
-        <p className="text-gray-600 text-center mb-8">
-          Add or edit your custom AI prompt below. You can only have one active
-          prompt at a time.
+        <p className="text-slate-400 font-medium max-w-xl mx-auto">
+          Define the personality and objective of your AI agent. You can manage one active system instruction at a time.
         </p>
+      </motion.div>
 
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          rows={3}
-          placeholder="Type your prompt here..."
-          className="w-full border border-blue-900 rounded-sm px-4 py-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-900 mb-4 resize-none"
-        />
+      {/* Editor Section */}
+      <motion.div variants={itemVariants} className="glass rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+          <FiTerminal size={120} className="text-brand-primary" />
+        </div>
 
-        {/* ✅ Loader-enabled Button */}
-        <button
-          onClick={handleAddOrUpdate}
-          disabled={!prompt.trim() || isSubmitting}
-          className={`relative w-full flex items-center justify-center gap-2 rounded-xl py-3 text-white font-medium overflow-hidden transition-all ${
-            !prompt.trim() || isSubmitting
-              ? "bg-blue-900/50 cursor-not-allowed"
-              : "bg-blue-900 hover:bg-[0A0C3F] cursor-pointer"
-          }`}
-        >
-          {/* White light overlay on hover */}
-          {!isSubmitting && prompt.trim() && (
-            <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
-          )}
+        <div className="relative z-10 space-y-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
+              <FiMessageSquare size={18} />
+            </div>
+            <h3 className="text-lg font-bold text-white uppercase tracking-wider text-[10px]">Instruction Set</h3>
+          </div>
 
-          <span className="relative z-10 flex items-center gap-2">
+          <div className="relative">
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              rows={5}
+              placeholder="e.g. You are a professional automotive sales assistant. Your goal is to schedule a test drive for the new Model X..."
+              className="w-full bg-slate-900/50 border border-slate-700/50 text-slate-200 rounded-3xl p-6 outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600 resize-none font-medium text-sm leading-relaxed"
+            />
+            <div className="absolute bottom-4 right-6 text-[10px] font-black text-slate-700 uppercase tracking-widest">
+              Live Compiler
+            </div>
+          </div>
+
+          <motion.button
+            onClick={handleAddOrUpdate}
+            disabled={!prompt.trim() || isSubmitting}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`w-full py-4 btn-gradient text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-brand-primary/20 transition-all cursor-pointer ${
+              !prompt.trim() || isSubmitting ? "opacity-30 cursor-not-allowed" : ""
+            }`}
+          >
             {isSubmitting ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <FiLoader className="animate-spin" size={20} />
             ) : isEditing ? (
-              <FiCheck />
+              <FiCheck size={18} />
             ) : (
-              <FiPlus />
+              <FiPlus size={18} />
             )}
-            {isSubmitting
-              ? "Saving..."
-              : isEditing
-              ? "Update Prompt"
-              : "Add Prompt"}
-          </span>
-        </button>
+            {isSubmitting ? "Deploying Instructions..." : isEditing ? "Synchronize Prompt" : "Deploy Prompt"}
+          </motion.button>
+        </div>
+      </motion.div>
 
-        {/* ✅ Table Section */}
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-blue-900 mb-3">
-            Saved Prompt
-          </h2>
-          <table className="w-full border border-blue-900 rounded-xl overflow-hidden">
-            <thead className="bg-blue-900/10 text-blue-900 text-left">
-              <tr>
-                <th className="py-2 px-4">Prompt</th>
-                <th className="py-2 px-4 text-center">Actions</th>
+      {/* Saved Prompts Section */}
+      <motion.div variants={itemVariants} className="glass rounded-[2.5rem] overflow-hidden border-slate-800/50 shadow-2xl">
+        <div className="p-8 border-b border-slate-800/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-brand-secondary/10 rounded-lg text-brand-secondary">
+              <FiTerminal size={20} />
+            </div>
+            <h2 className="text-xl font-bold text-white">Active System Prompt</h2>
+          </div>
+          <div className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">
+            Production Ready
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-900/50 border-b border-slate-800">
+                <th className="px-10 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[2px]">Configuration Details</th>
+                <th className="px-10 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[2px] text-center w-40">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-800/30">
               {loading ? (
                 <tr>
-                  <td
-                    colSpan={2}
-                    className="py-6 text-center text-gray-500 italic"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 border-2 border-blue-900 border-t-transparent rounded-full animate-spin" />
-                      Loading prompt...
+                  <td colSpan={2} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-8 h-8 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin" />
+                      <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">Retrieving data...</p>
                     </div>
                   </td>
                 </tr>
               ) : savedPrompt ? (
-                <tr className="border-t border-blue-900/20">
-                  <td className="py-3 px-4 text-gray-700">{savedPrompt}</td>
-                  <td className="py-3 px-4 text-center flex justify-center gap-4">
+                <tr className="group hover:bg-slate-800/20 transition-colors">
+                  <td className="px-10 py-8">
+                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl text-sm text-slate-300 leading-relaxed font-medium transition-all group-hover:border-slate-700">
+                      {savedPrompt}
+                    </div>
+                  </td>
+                  <td className="px-10 py-8 text-center">
                     <button
                       onClick={handleEditPrompt}
-                      className="text-blue-900 hover:text-blue-900 transition-colors cursor-pointer"
+                      className="p-4 glass rounded-2xl text-brand-primary hover:text-white hover:bg-brand-primary/20 transition-all active:scale-90"
+                      title="Edit Configuration"
                     >
                       <FiEdit2 size={18} />
                     </button>
@@ -276,19 +205,16 @@ const AddPrompt = () => {
                 </tr>
               ) : (
                 <tr>
-                  <td
-                    colSpan={2}
-                    className="py-6 text-center text-gray-500 italic"
-                  >
-                    No prompt found
+                  <td colSpan={2} className="py-20 text-center">
+                    <div className="text-slate-600 italic font-medium">No system instructions deployed yet.</div>
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

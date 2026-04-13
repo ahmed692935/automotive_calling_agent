@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { RowData } from "../interfaces/dashboard";
-import { FiCheckCircle, FiPhone, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiPhone, FiXCircle, FiPlay, FiInfo, FiLayers } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
 import {
@@ -15,6 +15,7 @@ import {
 } from "../store/slices/dashboardSlice";
 import type { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -32,7 +33,7 @@ const Dashboard = () => {
     (state: RootState) => state.dashboard
   );
 
-  const [currentPage, setCurrentPage] = useState(1); // ✅ pagination state
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
   const token = useSelector(
@@ -44,106 +45,38 @@ const Dashboard = () => {
 
   const totalCalls = pagination?.total || 0;
   const totalPages = Math.ceil(totalCalls / pageSize);
-
   const successfulCalls = pagination?.completed_calls || 0;
   const queuedCalls = pagination?.not_completed_calls || 0;
-
-  // const successfulCalls = calls.filter((c) => c.status === "completed").length;
-  // const failedCalls = calls.filter(
-  //   (c) => c.status === "failed" || c.status === "queued"
-  // ).length;
-
-  // const authState = useSelector((state: RootState) => state.auth);
-
-  // console.log(authState, "DATA");
 
   useEffect(() => {
     const loadHistory = async () => {
       if (token) {
         try {
           dispatch(fetchCallsStart());
-          // const data = await fetchCallHistory(token, 1, 10);
           const data = await fetchCallHistory(token, currentPage, pageSize);
-
           dispatch(
             fetchCallsSuccess({
               calls: data.calls,
               pagination: data.pagination,
-              // status_counts: data.status_counts,
             })
           );
         } catch (err: unknown) {
           console.error("Failed to fetch call history:", err);
           let errorMessage = "Failed to fetch call history";
-
-          if (err instanceof Error) {
-            errorMessage = err.message;
-          }
-
+          if (err instanceof Error) errorMessage = err.message;
           dispatch(fetchCallsFailure(errorMessage));
         }
       }
     };
-
     loadHistory();
   }, [dispatch, token, currentPage]);
-  // useEffect(() => {
-  //   const loadHistory = async () => {
-  //     if (token) {
-  //       try {
-  //         dispatch(fetchCallsStart());
-  //         const data = await fetchCallHistory(token, currentPage, pageSize);
 
-  //         dispatch(
-  //           fetchCallsSuccess({
-  //             calls: data.calls,
-  //             pagination: data.pagination,
-  //           })
-  //         );
-  //       } catch (err: unknown) {
-  //         console.error("Failed to fetch call history:", err);
-  //         let errorMessage = "Failed to fetch call history";
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
-  //         if (err instanceof Error) {
-  //           errorMessage = err.message;
-  //         }
-
-  //         dispatch(fetchCallsFailure(errorMessage));
-  //       }
-  //     }
-  //   };
-
-  //   // Initial load
-  //   loadHistory();
-
-  //   // Auto-refresh every 5s
-  //   const intervalId = window.setInterval(loadHistory, 5000);
-
-  //   // Cleanup
-  //   return () => window.clearInterval(intervalId);
-  // }, [dispatch, token, currentPage]);
-
-  // if (loading) return <p>Loading calls...</p>;
-  // if (loading)
-  //   return (
-  //     <div className="flex flex-col items-center justify-center h-screen space-y-4">
-  //       {/* Spinner */}
-  //       <div className="w-12 h-12 border-4 border-purple-300 border-t-[#391f52] rounded-full animate-spin"></div>
-
-  //       {/* Text */}
-  //       <p className="text-lg font-semibold text-[#391f52]">
-  //         Loading analytics...
-  //       </p>
-  //     </div>
-  //   );
-
-  if (error) return <p className="text-red-500">{error}</p>;
-
-  // const handleOpenModal = (row: RowData) => {
-  //   setSelectedRow(row);
-  //   setActiveTab("transcription");
-  //   setOpenModal(true);
-  // };
   const handleOpenModal = async (row: RowData) => {
     setSelectedRow(row);
     setActiveTab("transcription");
@@ -174,592 +107,311 @@ const Dashboard = () => {
     setSelectedRow(null);
   };
 
-  // const handleListenRecording = async (callId: string) => {
-  //   if (!token) return alert("Missing authentication token");
-
-  //   try {
-  //     const audioUrl = await fetchRecordingStream(callId, token);
-
-  //     // ✅ Option 1: Open in new tab
-  //     window.open(audioUrl, "_blank");
-
-  //     // ✅ Option 2 (alternative): Play inline
-  //     // const audio = new Audio(audioUrl);
-  //     // audio.play();
-  //   } catch (err: unknown) {
-  //     const error = err as AxiosError<{ error: string }>;
-  //     toast.error(error?.response?.data?.error || "Oops an error occurred");
-  //     console.error(err);
-  //   }
-  //   // catch (error) {
-  //   //   console.error("Failed to fetch recording:", error);
-  //   //   // alert("Unable to fetch recording. Please try again later.");
-  //   // }
-  // };
   const handleListenRecording = async (callId: string) => {
     if (!token) {
       toast.error("Missing authentication token");
       return;
     }
-
-    setLoadingRecordings(callId); // ✅ Start loading spinner
-
+    setLoadingRecordings(callId);
     try {
       const audioUrl = await fetchRecordingStream(callId, token);
-
-      // ✅ Open in new tab
       window.open(audioUrl, "_blank");
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
-      toast.error(
-        error?.response?.data?.error ||
-          // error.message ||
-          "Recording Not Found or wait sometime for proper loading"
-      );
-      // console.error(err);
+      toast.error(error?.response?.data?.error || "Recording Not Found or wait sometime for proper loading");
     } finally {
-      setLoadingRecordings(null); // ✅ Stop loader
+      setLoadingRecordings(null);
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="">
-      <div className=" py-14">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">
-            Analytics Dashboard
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
+      {/* Header */}
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black mb-2 tracking-tight">
+            <span className="text-white">Analytics </span>
+            <span className="text-gradient">Dashboard</span>
           </h1>
-          <p className="text-black">Monitor and analyze agent interactions</p>
+          <p className="text-slate-400 font-medium">Monitor and optimize your AI agent performance</p>
         </div>
+        <div className="flex items-center gap-2 px-4 py-2 glass rounded-2xl border-brand-primary/20">
+          <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
+          <span className="text-xs font-bold text-brand-primary uppercase tracking-widest">Real-time Insights</span>
+        </div>
+      </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* Total Calls */}
+      {/* Stats Cards */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          { label: "Total Calls", value: totalCalls, icon: <FiPhone />, color: "brand-primary" },
+          { label: "Successful Calls", value: successfulCalls, icon: <FiCheckCircle />, color: "emerald-400" },
+          { label: "Other States", value: queuedCalls, icon: <FiXCircle />, color: "rose-400" },
+        ].map((stat, idx) => (
           <div
-            className="bg-white rounded-xl shadow-lg border border-blue-200 p-6 flex items-center justify-between 
-                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp"
+            key={idx}
+            className="glass rounded-[2rem] p-8 flex items-center justify-between group hover:border-brand-primary/30 transition-all duration-500 hover:translate-y-[-5px]"
           >
             <div>
-              <h3 className="text-lg font-semibold text-[#391f52]">
-                Total Calls
-              </h3>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {totalCalls || 0}
-              </p>
+              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">{stat.label}</h3>
+              <p className="text-4xl font-black text-white tracking-tighter">{stat.value || 0}</p>
             </div>
-            <div className="bg-blue-900 text-white p-4 rounded-lg flex items-center justify-center">
-              <FiPhone size={28} />
+            <div className={`p-4 rounded-2xl bg-slate-900 border border-slate-800 text-${stat.color} group-hover:scale-110 transition-transform duration-500`}>
+              {stat.icon}
             </div>
           </div>
+        ))}
+      </motion.div>
 
-          {/* Successful Calls */}
-          <div
-            className="bg-white rounded-xl shadow-lg border border-green-200 p-6 flex items-center justify-between 
-                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp delay-100"
-          >
-            <div>
-              <h3 className="text-lg font-semibold text-green-700">
-                Successful Calls
-              </h3>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {successfulCalls}
-              </p>
+      {/* Table Section */}
+      <motion.div variants={itemVariants} className="glass rounded-[2.5rem] overflow-hidden border-slate-800/50 shadow-2xl">
+        <div className="p-8 border-b border-slate-800/50 flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
+              <FiLayers size={20} />
             </div>
-            <div className="bg-green-600 text-white p-4 rounded-lg flex items-center justify-center mr-4">
-              <FiCheckCircle size={24} />
-            </div>
+            <h2 className="text-xl font-bold text-white">Call Log</h2>
           </div>
-
-          {/* Failed Calls */}
-          <div
-            className="bg-white rounded-xl shadow-lg border border-red-200 p-6 flex items-center justify-between 
-                  transform transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fadeInUp delay-200"
-          >
-            <div>
-              <h3 className="text-lg font-semibold text-red-700">Others</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {queuedCalls}
-              </p>
-            </div>
-            <div className="bg-red-600 text-white p-4 rounded-lg flex items-center justify-center mr-4">
-              <FiXCircle size={24} />
-            </div>
+          <div className="flex items-center gap-2">
+             <span className="text-xs font-bold text-slate-500 uppercase">Page {currentPage} of {totalPages || 1}</span>
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="bg-white rounded-xl border border-blue-900 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                {/* <tr className="bg-[#391f52] to-purple-700 border-b border-purple-500"> */}
-                <tr className="bg-blue-900 border-b border-blue-900">
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    User Info
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Agent Name
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Receiver Number
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Call Status
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Call Creation
-                  </th>
-                  {/* <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Call Duration (sec)
-                  </th> */}
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-white whitespace-nowrap">
-                    Recording Url
-                  </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold text-white whitespace-nowrap">
-                    Action
-                  </th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-900/50 border-b border-slate-800">
+                {["User Info", "Agent", "Receiver", "Status", "Created At", "Recording", "Action"].map((h) => (
+                  <th key={h} className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[2px]">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/30">
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-20">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-10 h-10 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin" />
+                      <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Synchronizing data...</p>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              {/* <tbody>
-                {calls?.map((row, index) => (
+              ) : calls?.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-20 text-slate-500 font-medium italic">No call history found</td>
+                </tr>
+              ) : (
+                calls?.map((row) => (
                   <tr
                     key={row.id}
-                    className={`border-b border-purple-100 hover:bg-purple-50 transition-colors duration-200 ${
-                      index % 2 === 0 ? "bg-purple-25" : "bg-white"
-                    }`}
+                    className="group hover:bg-slate-800/20 transition-colors"
                   >
-                    <td className="px-4 py-4 text-gray-800 whitespace-nowrap">
-                      {row.username}
-                      <p className="text-xs">{row.email}</p>
-                      <p className="text-xs">{row.from_number || "N/A"}</p>
+                    <td className="px-8 py-6">
+                      <div className="font-bold text-white">{row.username}</div>
+                      <div className="text-xs text-slate-500">{row.email}</div>
                     </td>
-                    <td className="px-4 py-4 text-gray-700 whitespace-nowrap">
-                      {row.voice_name}
-                    </td>
-                    <td className="px-4 py-4 text-gray-700 whitespace-nowrap">
-                      {row.to_number}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full font-semibold
-      ${row.status === "completed" ? "bg-green-100 text-green-800" : ""}
-      ${row.status === "queued" ? "bg-gray-200 text-gray-800" : ""}
-      ${row.status === "failed" ? "bg-red-100 text-red-800" : ""}
-    `}
-                      >
+                    <td className="px-8 py-6 text-sm font-semibold text-slate-300 capitalize">{row.voice_name}</td>
+                    <td className="px-8 py-6 text-sm font-mono text-slate-400">{row.to_number}</td>
+                    <td className="px-8 py-6">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
+                        ${row.status === "completed" || row.status === "connected" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : 
+                          row.status === "busy" || row.status === "no-answer" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" :
+                          "bg-slate-800 text-slate-400 border border-slate-700"}
+                      `}>
                         {row.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                      {row.started_at
-                        ? new Date(row.started_at).toLocaleString()
-                        : "N/A"}
+                    <td className="px-8 py-6 text-xs text-slate-400 font-medium">
+                      {row.started_at ? new Date(row.started_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : "N/A"}
                     </td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                      {row.duration || "N/A"}
+                    <td className="px-8 py-6">
+                      <button
+                        onClick={() => handleListenRecording(row.call_id)}
+                        disabled={loadingRecordings === row.call_id}
+                        className="flex items-center gap-2 text-brand-primary text-xs font-bold hover:text-white transition-colors group/btn"
+                      >
+                        {loadingRecordings === row.call_id ? (
+                          <div className="w-4 h-4 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <FiPlay className="group-hover/btn:scale-125 transition-transform" />
+                        )}
+                        Listen
+                      </button>
                     </td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                      {row.recording_url ? (
-                        <a
-                          href={row.recording_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-600 underline"
-                        >
-                          Listen
-                        </a>
-                      ) : (
-                        "N/A"
-                      )}
-                    </td>
-                    <td className="px-4 py-4 text-center whitespace-nowrap">
+                    <td className="px-8 py-6">
                       <button
                         onClick={() => handleOpenModal(row)}
-                        className="px-4 py-2 cursor-pointer text-sm font-medium bg-[#391f52] text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-purple-500/25"
+                        className="p-2.5 glass rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all active:scale-95"
                       >
-                        Details
+                        <FiInfo size={16} />
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody> */}
-              <tbody>
-                {/* ✅ Table level loading state */}
-                {loading ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="text-center py-10 text-[#391f52] font-medium"
-                    >
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="w-8 h-8 border-4 border-blue-900 border-t-blue-900 rounded-full animate-spin"></div>
-                        <p className="text- ">Loading calls...</p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  calls?.map((row, index) => (
-                    <tr
-                      key={row.id}
-                      className={`border-b border-blue-100 hover:bg-blue-50 transition-colors duration-200 ${
-                        index % 2 === 0 ? "bg-blue-25" : "bg-white"
-                      }`}
-                    >
-                      <td className="px-4 py-4 text-gray-800 whitespace-nowrap">
-                        {row.username}
-                        <p className="text-xs">{row.email}</p>
-                        {/* <p className="text-xs">{row.from_number || "N/A"}</p> */}
-                      </td>
-                      <td className="px-4 py-4 text-gray-700 whitespace-nowrap">
-                        {row.voice_name}
-                      </td>
-                      <td className="px-4 py-4 text-gray-700 whitespace-nowrap">
-                        {row.to_number}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 rounded-full font-semibold
-                    ${
-                      row.status === "completed" || row.status === "connected"
-                        ? "bg-green-100 text-green-800"
-                        : ""
-                    }
-                    ${
-                      row.status === "not_attended" ||
-                      row.status === "unanswered"
-                        ? "bg-gray-200 text-gray-800"
-                        : ""
-                    }
-                    ${
-                      row.status === "no-answer" || row.status === "busy"
-                        ? "bg-red-100 text-red-800"
-                        : ""
-                    }
-                    ${row.status === "busy" ? "bg-red-100 text-red-800" : ""}`}
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        {row.started_at
-                          ? new Date(row.started_at).toLocaleString()
-                          : "N/A"}
-                      </td>
-                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        {row.duration ? Number(row.duration).toFixed(2) : "N/A"}
-                      </td> */}
-                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        {row.recording_url ? (
-                          <a
-                            href={row.recording_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#3F3EED] underline"
-                          >
-                            Listen
-                          </a>
-                        ) : (
-                          "N/A"
-                        )}
-                      </td> */}
-                      {/* <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        <button
-                          onClick={() => handleListenRecording(row.call_id)}
-                          className="text-[#3F3EED] underline cursor-pointer hover:text-blue-700"
-                        >
-                          Listen
-                        </button>
-                      </td> */}
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        <button
-                          onClick={() => handleListenRecording(row.call_id)}
-                          disabled={loadingRecordings === row.call_id}
-                          className={`flex items-center gap-2 text-blue-900 underline cursor-pointer 
-      ${
-        loadingRecordings === row.call_id
-          ? "opacity-60 pointer-events-none"
-          : "hover:text-blue-900"
-      }`}
-                        >
-                          {loadingRecordings === row.call_id ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-blue-900 border-t-transparent rounded-full animate-spin"></div>
-                              <span>Listen</span>
-                            </>
-                          ) : (
-                            "Listen"
-                          )}
-                        </button>
-                      </td>
-
-                      <td className="px-4 py-4 text-center whitespace-nowrap">
-                        {/* <button
-                          onClick={() => handleOpenModal(row)}
-                          className="px-4 py-2 cursor-pointer text-sm font-medium bg-blue-900 text-white rounded-lg hover:scale-105 transition"
-                        >
-                          Details
-                        </button> */}
-                        <button
-                          onClick={() => handleOpenModal(row)}
-                          className="relative px-4 py-2 cursor-pointer text-sm font-medium bg-blue-900 text-white rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105"
-                        >
-                          <span className="absolute inset-0 bg-white opacity-0 hover:opacity-20 transition-opacity duration-300 rounded-lg"></span>
-                          <span className="relative z-10">Details</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="flex justify-between items-center mt-6">
+
+        {/* Pagination */}
+        <div className="p-8 bg-slate-900/40 border-t border-slate-800/50 flex justify-between items-center">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50 cursor-pointer "
+            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all transition-all active:scale-95"
           >
             Previous
           </button>
-
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-
+          <div className="flex gap-2">
+            {[...Array(totalPages || 1)].map((_, i) => (
+              <button 
+                key={i} 
+                onClick={() => setCurrentPage(i + 1)}
+                className={`w-8 h-8 rounded-lg text-xs font-black transition-all ${currentPage === i + 1 ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "glass text-slate-500 hover:text-slate-300"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50 cursor-pointer"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all transition-all active:scale-95"
           >
             Next
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Modal Overlay */}
-      {openModal && selectedRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Background Overlay */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={handleCloseModal}
-          ></div>
+      <AnimatePresence>
+        {openModal && selectedRow && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+              onClick={handleCloseModal}
+            />
 
-          {/* Modal Content */}
-          <div className="relative bg-white w-full max-w-2xl rounded-xl border border-blue-200 shadow-2xl overflow-hidden">
-            {/* Modal Header */}
-            {/* <div className="p-6 border-b border-blue-200 bg-gradient-to-b from-[#6d0f78] to-[#0a0f2d]"> */}
-            {/* <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-[#2A1EB3] via-blue-900 to-[#7C78FF]"> */}
-            <div className="p-6 border-b border-blue-200 bg-gradient-to-r from-blue-900 to-blue-900">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    Call Details
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 mt-3 gap-1 md:gap-30 text-sm">
-                    {/* Left Column */}
-                    <div className="space-y-1">
-                      <p className="text-white">
-                        <span className="text-white">User ID:</span>{" "}
-                        {selectedRow.user_id || "N/A"}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-white">Agent ID:</span>{" "}
-                        {selectedRow.voice_id || "N/A"}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-white">Call ID:</span>{" "}
-                        {selectedRow.call_id || "N/A"}
-                      </p>
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-1">
-                      <p className="text-white">
-                        <span className="text-white">Call Started:</span>{" "}
-                        {selectedRow.started_at
-                          ? new Date(selectedRow.started_at).toLocaleString()
-                          : "N/A"}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-white">Call Ended:</span>{" "}
-                        {selectedRow.ended_at
-                          ? new Date(selectedRow.ended_at).toLocaleString()
-                          : "N/A"}
-                      </p>
-                    </div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-slate-900/90 border border-slate-800 w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden glass"
+            >
+              <div className="p-8 border-b border-slate-800 flex justify-between items-center bg-gradient-to-r from-brand-primary/10 to-transparent">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-brand-primary/10 rounded-2xl text-brand-primary shadow-inner">
+                    <FiPhone size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-white">Call Details</h3>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{selectedRow.call_id}</p>
                   </div>
                 </div>
-
-                <button
-                  onClick={handleCloseModal}
-                  className="text-blue-200 hover:text-white transition-colors p-1 cursor-pointer"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                <button onClick={handleCloseModal} className="p-3 glass rounded-2xl text-slate-400 hover:text-white transition-all active:scale-95">
+                  <X className="w-6 h-6" />
                 </button>
               </div>
-            </div>
 
-            {transcriptLoading && (
-              <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10">
-                <div className="w-10 h-10 border-4 border-blue-900 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-blue-900 mt-3 font-medium">
-                  Loading transcript...
-                </p>
+              <div className="p-8 grid grid-cols-2 md:grid-cols-4 gap-6 bg-slate-900/30">
+                {[
+                  { label: "Agent", val: selectedRow.voice_name },
+                  { label: "Phone", val: selectedRow.to_number },
+                  { label: "Status", val: selectedRow.status },
+                  { label: "Language", val: "English" },
+                ].map((d, i) => (
+                  <div key={i}>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-1">{d.label}</p>
+                    <p className="text-sm font-bold text-slate-200 capitalize">{d.val}</p>
+                  </div>
+                ))}
               </div>
-            )}
 
-            {/* Tab Navigation */}
-            <div className="flex border-b border-blue-200 bg-blue-50">
-              <button
-                className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
-                  activeTab === "transcription"
-                    ? "text-blue-900 bg-white"
-                    : "text-blue-900 hover:text-blue-700 hover:bg-blue-100"
-                }`}
-                onClick={() => setActiveTab("transcription")}
-              >
-                Transcription
-                {activeTab === "transcription" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-900"></div>
-                )}
-              </button>
-              {/* <button
-                className={`px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
-                  activeTab === "summary"
-                    ? "text-[#3F3EED] bg-white"
-                    : "text-blue-900 hover:text-blue-700 hover:bg-blue-100"
-                }`}
-                onClick={() => setActiveTab("summary")}
-              >
-                Summary
-                {activeTab === "summary" && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3F3EED]"></div>
-                )}
-              </button> */}
-            </div>
-
-            {/* Tab Content */}
-            <div className="p-6 max-h-96 overflow-y-auto">
-              <div className="text-gray-700 leading-relaxed">
-                {activeTab === "transcription" ? (
-                  <div>
-                    <h4 className="text-blue-900 font-semibold mb-3">
-                      Call Transcription
-                    </h4>
-                    {/* <p className="text-gray-600">{selectedRow.transcription}</p> */}
-                    {/* {selectedRow.transcript ? (
-                      <ul className="space-y-2">
-                        {selectedRow.transcript.map((line, idx) => (
-                          <li key={idx} className="text-sm">
-                            <span className="font-semibold text-[#3F3EED]">
-                              {line.role}:
-                            </span>{" "}
-                            {line.text}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-600">
-                        No transcription available
-                      </p>
-                    )} */}
-
-                    {/* {selectedRow.transcript &&
-                    Array.isArray(selectedRow.transcript.items) ? (
-                      <ul className="space-y-2">
-                        {selectedRow.transcript.items.map((item, idx) => (
-                          <li key={idx} className="text-sm">
-                            <span className="font-semibold text-[#3F3EED]">
-                              {item.role === "assistant" ? "Agent" : "User"}:
-                            </span>{" "}
-                            {Array.isArray(item.content)
-                              ? item.content.join(" ")
-                              : item.content || ""}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-600">
-                        No transcription available
-                      </p>
-                    )} */}
-                    {selectedRow.transcript &&
-                    Array.isArray(selectedRow.transcript.items) &&
-                    selectedRow.transcript.items.length > 0 ? (
-                      <ul className="space-y-2">
-                        {selectedRow.transcript.items.map((item, idx) => (
-                          <li key={idx} className="text-sm">
-                            <span className="font-semibold text-blue-900">
-                              {item.role === "assistant" ? "Agent" : "User"}:
-                            </span>{" "}
-                            {Array.isArray(item.content)
-                              ? item.content.join(" ")
-                              : item.content || ""}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-600">
-                        {selectedRow.transcript?.note ||
-                          "No transcript available"}
-                      </p>
+              <div className="flex border-b border-slate-800 bg-slate-900/40">
+                {["transcription", "summary"].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`px-8 py-4 text-xs font-black uppercase tracking-widest transition-all relative ${
+                      activeTab === tab ? "text-brand-primary" : "text-slate-500 hover:text-slate-300"
+                    }`}
+                    onClick={() => setActiveTab(tab as any)}
+                  >
+                    {tab}
+                    {activeTab === tab && (
+                      <motion.div layoutId="modal-tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-primary" />
                     )}
+                  </button>
+                ))}
+              </div>
+
+              <div className="p-8 h-80 overflow-y-auto bg-slate-950/20">
+                {transcriptLoading ? (
+                  <div className="h-full flex flex-col items-center justify-center gap-4">
+                    <div className="w-8 h-8 border-4 border-brand-primary/10 border-t-brand-primary rounded-full animate-spin" />
+                    <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">Compiling history...</p>
                   </div>
                 ) : (
-                  <div>
-                    <h4 className="text-blue-900 font-semibold mb-3">
-                      Call Summary
-                    </h4>
-                    <p className="text-gray-600">
-                      {selectedRow.summary || "No summary available"}
-                    </p>
+                  <div className="space-y-4">
+                    {activeTab === "transcription" ? (
+                      selectedRow.transcript?.items?.length ? (
+                        selectedRow.transcript.items.map((item, idx) => (
+                          <div key={idx} className={`flex gap-4 ${item.role === 'assistant' ? 'flex-row' : 'flex-row-reverse'}`}>
+                            <div className={`p-4 rounded-3xl max-w-[80%] ${item.role === 'assistant' ? 'glass bg-brand-primary/5 text-slate-200' : 'bg-slate-800/80 text-slate-300'}`}>
+                              <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">
+                                {item.role === 'assistant' ? 'Agent' : 'User'}
+                              </p>
+                              <p className="text-sm leading-relaxed">{Array.isArray(item.content) ? item.content.join(" ") : item.content}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-slate-600 italic text-center py-10">No transcript lines found.</p>
+                      )
+                    ) : (
+                      <p className="text-slate-300 leading-relaxed font-medium">{selectedRow.summary || "Summary generated upon call completion."}</p>
+                    )}
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Modal Footer */}
-            <div className="p-6 border-t border-blue-200 bg-blue-50 flex justify-center">
-              {/* <button
-                onClick={handleCloseModal}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
-              >
-                Close
-              </button> */}
-              <button
-                onClick={handleCloseModal}
-                className="relative w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg 
-             transform hover:scale-105 transition-all duration-200 font-medium shadow-lg overflow-hidden"
-              >
-                {/* White overlay on hover */}
-                <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
-
-                <span className="relative z-10">Close</span>
-              </button>
-            </div>
+              <div className="p-8 border-t border-slate-800 flex justify-center bg-slate-900/40">
+                <button
+                  onClick={handleCloseModal}
+                  className="w-full md:w-auto px-10 py-3 btn-gradient text-white rounded-2xl font-bold shadow-xl shadow-brand-primary/20 active:scale-95"
+                >
+                  Close Insights
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
+
+const X = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
 
 export default Dashboard;

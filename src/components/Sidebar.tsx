@@ -1,121 +1,38 @@
-// import { useState } from "react";
-// import { BiMenu, BiX } from "react-icons/bi";
-// import { Link, useNavigate, useLocation } from "react-router-dom";
-// import Logo from "../../public/images/sumaLogo.png";
-// import { logout } from "../store/slices/authSlice";
-// import { useDispatch } from "react-redux";
-
-// const Sidebar = () => {
-//   const [open, setOpen] = useState(false);
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-//   const location = useLocation();
-
-//   const menuItems = [
-//     { label: "Dashboard", path: "/dashboard" },
-//     { label: "Initiate Call", path: "/call" },
-//     { label: "Add Prompt", path: "/add-prompt" },
-//   ];
-
-//   const handleNavigate = () => {
-//     navigate("/");
-//   };
-
-//   const handleLogout = () => {
-//     dispatch(logout());
-//     localStorage.removeItem("user");
-//     navigate("/login");
-//   };
-
-//   return (
-//     <div className="flex">
-//       {/* ✅ Mobile Menu Button */}
-//       <button
-//         className="lg:hidden fixed top-1 left-1 z-50 p-2 rounded-md"
-//         onClick={() => setOpen(true)}
-//       >
-//         <BiMenu size={24} />
-//       </button>
-//       <div
-//         className={`${
-//           open ? "translate-x-0" : "-translate-x-full"
-//         } fixed lg:static top-0 left-0 min-h-[100vh] w-64 bg-white text-black transform lg:translate-x-0 transition-transform duration-300 z-50`}
-//       >
-//         <div className="flex items-center justify-between p-4 border-b border-black">
-//           <img
-//             src={Logo}
-//             width={150}
-//             onClick={handleNavigate}
-//             className="cursor-pointer"
-//           />
-//           <button
-//             className="lg:hidden text-black"
-//             onClick={() => setOpen(false)}
-//           >
-//             <BiX size={24} />
-//           </button>
-//         </div>
-
-//         <nav className="flex flex-col gap-1 pt-4 pl-1 relative">
-//           {menuItems.map((item) => {
-//             const isActive = location.pathname === item.path;
-//             return (
-//               <Link
-//                 key={item.path}
-//                 to={item.path}
-//                 className={`px-3 py-2 rounded relative transition-colors duration-200 pl-5 ${
-//                   isActive
-//                     ? // ? "bg-blue-100 text-[#3F3EED] font-semibold"
-//                       "bg-blue-100 text-blue-900 font-semibold"
-//                     : "text-black hover:bg-blue-100"
-//                 }`}
-//                 onClick={() => setOpen(false)}
-//               >
-//                 {isActive && (
-//                   <div className="absolute left-0 top-0 w-1 h-full bg-blue-900 rounded-r"></div>
-//                 )}
-//                 {item.label}
-//               </Link>
-//             );
-//           })}
-//           <button
-//             onClick={handleLogout}
-//             className="px-3 py-2 rounded text-left text-black hover:bg-blue-100 pl-5 cursor-pointer"
-//           >
-//             Logout
-//           </button>
-//         </nav>
-//       </div>
-
-//       {open && (
-//         <div
-//           className="fixed inset-0 bg-black/50 lg:hidden"
-//           onClick={() => setOpen(false)}
-//         />
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Sidebar;
-
-import { useState } from "react";
-import { BiMenu, BiX } from "react-icons/bi";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import Logo from "../../public/images/sumaLogo.png";
+import { useSelector, useDispatch } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  PhoneCall,
+  FileEdit,
+  LogOut,
+  ChevronRight
+} from "lucide-react";
+import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
-import { useDispatch } from "react-redux";
+import SumaLogo from "/images/SumaWhite.jpeg";
 
 const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const menuItems = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Initiate Call", path: "/call" },
-    { label: "Add Prompt", path: "/add-prompt" },
+    { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
+    { label: "Initiate Call", path: "/call", icon: <PhoneCall size={18} /> },
+    { label: "Add Prompt", path: "/add-prompt", icon: <FileEdit size={18} /> },
   ];
 
   const handleLogout = () => {
@@ -124,104 +41,147 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const handleNavigateHome = () => navigate("/");
+  const navItemVariants = {
+    hover: { x: 5, color: "#0ea5e9" },
+    tap: { scale: 0.95 }
+  };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={handleNavigateHome}
-        >
-          <img src={Logo} alt="Logo" className="h-8" />
-        </div>
-
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center gap-6">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`text-sm font-medium transition-colors duration-200 ${
-                  isActive
-                    ? "text-blue-900 font-semibold border-b-2 border-blue-900 pb-1"
-                    : "text-gray-700 hover:text-blue-900"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-          <button
-            onClick={handleLogout}
-            className="text-sm font-medium text-gray-700 hover:text-red-600 transition"
-          >
-            Logout
-          </button>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-2xl text-gray-800"
-          onClick={() => setMenuOpen(true)}
-        >
-          <BiMenu />
-        </button>
-      </div>
-
-      {/* Mobile Menu Drawer */}
-      <div
-        className={`fixed top-0 right-0 w-3/4 sm:w-1/2 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
+    <nav
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-4 sm:px-8 py-3 ${isScrolled ? "glass-nav py-2 shadow-2xl" : "bg-transparent py-4"
         }`}
-      >
-        <button
-          className="absolute top-5 right-5 text-3xl text-gray-700"
-          onClick={() => setMenuOpen(false)}
-        >
-          <BiX />
-        </button>
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95">
+          <img
+            src={SumaLogo}
+            alt="Suma Logo"
+            className="h-8 sm:h-10 w-auto object-contain rounded-lg shadow-lg"
+          />
+        </Link>
 
-        <div className="flex flex-col items-center mt-20 space-y-6">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMenuOpen(false)}
-                className={`text-lg font-medium ${
-                  isActive ? "text-blue-900 font-semibold" : "text-gray-800"
-                } hover:text-blue-900 transition`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8">
+          <ul className="flex items-center gap-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 overflow-hidden group ${isActive
+                        ? "text-brand-primary bg-brand-primary/10"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+                      }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-active"
+                        className="absolute bottom-0 left-0 w-full h-[2px] bg-brand-primary"
+                      />
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
 
-          <button
-            onClick={() => {
-              handleLogout();
-              setMenuOpen(false);
-            }}
-            className="mt-4 text-lg font-medium text-gray-800 hover:text-red-600 transition"
-          >
-            Logout
-          </button>
+          <div className="h-6 w-[1px] bg-slate-800" />
+
+          {/* User Info & Logout */}
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end">
+              <span className="text-xs font-bold text-slate-200 uppercase tracking-tighter">
+                {user?.username || "Agent"}
+              </span>
+              <span className="text-[10px] text-slate-500 font-medium">Online</span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all shadow-xl group"
+              title="Logout"
+            >
+              <LogOut size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Toggle */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2 rounded-xl glass border-slate-700/50 text-slate-200"
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </motion.button>
       </div>
 
-      {/* Overlay */}
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-    </header>
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[90]"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-[80%] max-w-sm glass z-[100] p-6 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-10">
+                <img src={SumaLogo} alt="Logo" className="h-8 rounded-lg" />
+                <button onClick={() => setMenuOpen(false)} className="p-2 glass rounded-lg text-slate-400">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2 flex-1">
+                {menuItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <motion.div key={item.path} variants={navItemVariants} whileHover="hover" whileTap="tap">
+                      <Link
+                        to={item.path}
+                        onClick={() => setMenuOpen(false)}
+                        className={`flex items-center justify-between px-6 py-4 rounded-2xl font-bold transition-all ${isActive
+                            ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
+                            : "text-slate-400 hover:bg-slate-800/40"
+                          }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          {item.icon}
+                          {item.label}
+                        </div>
+                        <ChevronRight size={16} className={isActive ? "opacity-100" : "opacity-0"} />
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-auto border-t border-slate-800 pt-6">
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-4 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-rose-500/20 transition-all cursor-pointer"
+                >
+                  <LogOut size={20} />
+                  Sign Out
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </nav>
   );
 };
 

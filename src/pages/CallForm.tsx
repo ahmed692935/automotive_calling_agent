@@ -1,4 +1,3 @@
-// src/components/CallForm.jsx
 import { useForm } from "react-hook-form";
 import type { CallFormInputs } from "../interfaces/callForm";
 import {
@@ -8,31 +7,39 @@ import {
   resetCall,
   setTranscript,
   togglePopup,
-  //   togglePopup,
 } from "../store/slices/callForm";
 import { useDispatch, useSelector } from "react-redux";
 import { checkCallStatus, initiateCall } from "../api/Call";
-// import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
-// import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoCall } from "react-icons/io5";
 import type { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
-// import { useState } from "react";
-// import type { TranscriptLine } from "../interfaces/dashboard";
-// import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  User,
+  Mail,
+  Phone,
+  MessageSquare,
+  Globe,
+  Mic,
+  ArrowRight,
+  Loader2,
+  PhoneForwarded,
+  CheckCircle2
+} from "lucide-react";
 
 function CallForm() {
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
-  //   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-    // setValue,
+    formState: { errors, isSubmitting: loading },
     reset,
     watch,
   } = useForm<CallFormInputs>({
@@ -47,22 +54,14 @@ function CallForm() {
       voice: "",
     },
   });
-  const dispatch = useDispatch();
-  //   const navigate = useNavigate();
-  //   const [openPopup, setOpenPopup] = useState(false);
-  //   const [callId, setCallId] = useState<string | null>(null);
-  //   const [polling, setPolling] = useState<NodeJS.Timeout | null>(null);
-  //   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
+
   const token = useSelector(
-    (state: RootState) => state.auth.user?.access_token
+    (state: RootState) => state.auth.user?.access_token || "mock-token"
   );
 
-  const { callId, openPopup, transcript, status } = useSelector(
+  const { callId, openPopup, status } = useSelector(
     (state: RootState) => state.call
   );
-
-  console.log(transcript, "call id");
-  const navigate = useNavigate();
 
   const onSubmit = async (values: CallFormInputs) => {
     try {
@@ -75,11 +74,8 @@ function CallForm() {
 
       localStorage.setItem("lastCallId", res.call_id);
       localStorage.setItem("callerEmail", values.caller_email);
+      toast.success("Call transmission localized. Connecting...");
     } catch (err: unknown) {
-      // let message = "Failed to create call";
-      // if (err instanceof Error) {
-      //   message = err.message;
-      // }
       const error = err as AxiosError<{ error: string }>;
       toast.error(error?.response?.data?.error || "Oops an error occurred");
       dispatch(createCallFailure(error.message));
@@ -90,34 +86,33 @@ function CallForm() {
     if (!token) return;
     try {
       const res = await checkCallStatus(id, token);
-
-      // ✅ full response dispatch karo
       dispatch(setTranscript(res));
 
-      // ✅ check status & stop polling
       if (
         res.status === "completed" ||
         res.status === "busy" ||
         res.status === "ended" ||
-        res.status === "unanswered"
+        res.status === "unanswered" ||
+        res.status === "no-answer"
       ) {
-        if (interval) clearInterval(interval); // 👈 stop API hits
-        dispatch(togglePopup(false));
-
-        navigate("/call"); // 👈 redirect to dashboard
-        reset();
+        if (interval) clearInterval(interval);
+        toast.success(`Call ended with status: ${res.status}`);
+        setTimeout(() => {
+          dispatch(togglePopup(false));
+          navigate("/dashboard");
+          reset();
+        }, 1500);
       }
     } catch (err) {
       console.error("Polling failed", err);
     }
   };
 
-  // ✅ Polling every 3s when popup is open
   useEffect(() => {
     let interval: number;
     if (openPopup && callId) {
       interval = setInterval(() => {
-        handlePoll(callId, interval); // 👈 pass interval ref
+        handlePoll(callId, interval);
       }, 3000);
     }
     return () => {
@@ -125,492 +120,277 @@ function CallForm() {
     };
   }, [openPopup, callId, token]);
 
-  // const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, staggerChildren: 0.1 } }
+  };
 
-  // const token = useSelector((state: RootState) => state.auth.user?.access_token);
-
-  // ✅ Fetch System Prompt and auto-fill "context"
-  // useEffect(() => {
-  //   const fetchPrompt = async () => {
-  //     try {
-  //       // setLoadingPrompt(true);
-  //       if (!token) return;
-
-  //       const response = await getSystemPrompt(token);
-  //       if (response?.system_prompt) {
-  //         // ✅ Fill “Call Context” field automatically
-  //         setValue("context", response.system_prompt);
-  //       }
-  //     } catch (err) {
-  //       const error = err as AxiosError<{ error?: string }>;
-  //       toast.error(error.response?.data?.error || "Failed to load prompt.");
-  //       console.error("Prompt fetch error:", err);
-  //     } finally {
-  //       // setLoadingPrompt(false);
-  //     }
-  //   };
-
-  //   fetchPrompt();
-  // }, [token, setValue]);
-
-  // ✅ Status check function
-  //   const handlePoll = async (id: string) => {
-  //     if (!token) return;
-  //     try {
-  //       const res = await checkCallStatus(id, token);
-
-  //       dispatch(setTranscript(res));
-  //     } catch (err) {
-  //       console.error("Polling failed", err);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     let interval: NodeJS.Timeout;
-  //     if (openPopup && callId) {
-  //       interval = setInterval(() => {
-  //         handlePoll(callId);
-  //       }, 3000);
-  //     }
-  //     return () => {
-  //       if (interval) clearInterval(interval);
-  //     };
-  //   }, [openPopup, callId, token]);
-
-  //   const onSubmit = async (data: CallFormInputs) => {
-  //     console.log(data, "FORM DATA");
-  //     try {
-  //       const response = await fetch(`${backendUrl}api/assistant-initiate-call`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(data),
-  //       });
-
-  //       if (!response.ok) throw new Error("Failed to initiate call");
-
-  //       const res = await response.json();
-  //       localStorage.setItem("lastCallId", res.call_id);
-  //       localStorage.setItem("callerEmail", data.caller_email);
-
-  //       navigate("/call-details");
-  //     } catch (err) {
-  //       console.error(err);
-  //       alert("Failed to initiate call. Please try again.");
-  //     }
-  //   };
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 }
+  };
 
   return (
-    <>
-      {/* <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"> */}
-      <div className="max-w-3xl mx-auto p-8 mt-8">
-        <h1 className="text-2xl font-bold text-center mb-10 text-blue-900">
-          Let AI Handle Your Next Call
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-4xl mx-auto pb-20"
+    >
+      {/* Header */}
+      <motion.div variants={itemVariants} className="text-center space-y-4 mb-12">
+        <h1 className="text-4xl font-black tracking-tight leading-tight">
+          <span className="text-white">Let AI Handle </span>
+          <span className="text-gradient">Your Next Call</span>
         </h1>
+        <p className="text-slate-400 font-medium max-w-lg mx-auto">
+          Scale your outreach program with intelligent, lifelike AI agents that handle logistics and support.
+        </p>
+      </motion.div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Name + Email */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                {...register("caller_name", { required: "Name is required" })}
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900 hover:border-blue-900
- ${errors.caller_name ? "border-red-500" : "border-gray-300"}`}
-                placeholder="Your Name"
-              />
-              {errors.caller_name && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.caller_name.message}
-                </p>
-              )}
+      {/* Form Container */}
+      <motion.div variants={itemVariants} className="glass rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <PhoneForwarded size={160} className="text-brand-primary" />
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 space-y-8">
+          {/* Identity Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Your Identity</label>
+              <div className="relative group/input">
+                <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  {...register("caller_name", { required: "Name is required" })}
+                  className="w-full bg-slate-900/40 border border-slate-700/40 text-white pl-14 pr-6 py-4 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600 font-medium"
+                />
+              </div>
+              {errors.caller_name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1">{errors.caller_name.message}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Your Email
-              </label>
-              <input
-                type="email"
-                {...register("caller_email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /\S+@\S+\.\S+/,
-                    message: "Email is invalid",
-                  },
-                })}
-                className={`w-full px-4 hover:border-blue-900
- py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900  ${
-   errors.caller_email ? "border-red-500" : "border-gray-300"
- }`}
-                placeholder="name@example.com"
-              />
-              {errors.caller_email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.caller_email.message}
-                </p>
-              )}
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Confirmation Email</label>
+              <div className="relative group/input">
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  {...register("caller_email", {
+                    required: "Email is required",
+                    pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email" }
+                  })}
+                  className="w-full bg-slate-900/40 border border-slate-700/40 text-white pl-14 pr-6 py-4 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600 font-medium"
+                />
+              </div>
+              {errors.caller_email && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1">{errors.caller_email.message}</p>}
             </div>
           </div>
 
-          {/* Phone Numbers */}
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-            {/* <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Your Phone Number
-              </label>
+          {/* Destination */}
+          <div className="space-y-2">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Destination Number</label>
+            <div className="relative group/input">
+              <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
               <input
                 type="tel"
-                {...register("caller_number", {
-                  required: "Caller number is required",
-                  pattern: {
-                    value: /^\+?[1-9]\d{1,14}$/,
-                    message: "Enter a valid phone number",
-                  },
-                })}
-                className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
-                  errors.caller_number ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="+1234567890"
-              />
-              {errors.caller_number && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.caller_number.message}
-                </p>
-              )}
-            </div> */}
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Number to Call
-              </label>
-              <input
-                type="tel"
+                placeholder="+1 234 567 8900"
                 {...register("outbound_number", {
-                  required: "Outbound number is required",
-                  pattern: {
-                    value: /^\+?[1-9]\d{1,14}$/,
-                    message: "Enter a valid phone number",
-                  },
+                  required: "Number is required",
+                  pattern: { value: /^\+?[1-9]\d{1,14}$/, message: "Enter a valid E.164 number" }
                 })}
-                className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  ${
-                  errors.outbound_number ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="+1234567890"
+                className="w-full bg-slate-900/40 border border-slate-700/40 text-white pl-14 pr-6 py-4 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600 font-medium tracking-widest"
               />
-              {errors.outbound_number && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.outbound_number.message}
-                </p>
-              )}
             </div>
+            {errors.outbound_number && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1">{errors.outbound_number.message}</p>}
           </div>
 
           {/* Context */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Call Context
-            </label>
-            <textarea
-              {...register("context", { required: "Context is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  ${
-                errors.context ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Provide any additional context for the call..."
-            ></textarea>
-            {/* <textarea
-              {...register("context", { required: "Context is required" })}
-              disabled={loadingPrompt} // ✅ disable while loading
-              placeholder={
-                loadingPrompt
-                  ? "Loading system prompt..."
-                  : "Provide any additional context for the call..."
-              }
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
-                errors.context ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-
-            {errors.context && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.context.message}
-              </p>
-            )} */}
-          </div>
-
-          {/* Language */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Language
-            </label>
-            <select
-              {...register("language")}
-              className="w-full px-4 py-2 border border-gray-300 hover:border-blue-900 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-900 "
-            >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              {/* <option value="german">German</option>
-              <option value="italian">Italian</option>
-              <option value="french">French</option> */}
-            </select>
-          </div>
-
-          {/* Agent Name (New Field) */}
-          {/* <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Agent Name
-            </label>
-            <select
-              {...register("voice", { required: "Agent name is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED] ${
-                errors.voice ? "border-red-500" : "border-gray-300"
-              }`}
-            >
-              <option value="">Select Agent</option>
-              <option value="david">David - English (Male)</option>
-              <option value="ravi">Ravi - English (Male)</option>
-              <option value="emily-british">Emily - English (Female)</option>
-              <option value="alice-british">Alice - English (Female)</option>
-              <option value="julia-british">Julia - English (Female)</option>
-              <option value="julio">Julio - Spanish (Male)</option>
-              <option value="donato">Donato - Spanish (Male)</option>
-              <option value="helena-spanish">Helena - Spanish (Female)</option>
-              <option value="rosa">Rosa - Spanish (Female)</option>
-              <option value="mariam">Mariam - Spanish (Female)</option>
-            </select>
-            {errors.voice && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.voice.message}
-              </p>
-            )}
-          </div> */}
-          {/* Agent Name (Dynamic by Language) */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Agent Name
-            </label>
-            <select
-              {...register("voice", { required: "Agent name is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900 ${
-                errors.voice ? "border-red-500" : "border-gray-300"
-              }`}
-            >
-              {watch("language") === "es" ? (
-                <>
-                  <option value="">Select Spanish Agent</option>
-                  <option value="julio">Julio - Spanish (Male)</option>
-                  <option value="donato">Donato - Spanish (Male)</option>
-                  <option value="helena-spanish">
-                    Helena - Spanish (Female)
-                  </option>
-                  <option value="rosa">Rosa - Spanish (Female)</option>
-                  <option value="mariam">Mariam - Spanish (Female)</option>
-                </>
-              ) : (
-                <>
-                  <option value="">Select English Agent</option>
-                  <option value="david">David - English (Male)</option>
-                  <option value="ravi">Ravi - English (Male)</option>
-                  <option value="emily-british">
-                    Emily - English (Female)
-                  </option>
-                  <option value="alice-british">
-                    Alice - English (Female)
-                  </option>
-                  <option value="julia-british">
-                    Julia - English (Female)
-                  </option>
-                </>
-              )}
-            </select>
-            {errors.voice && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.voice.message}
-              </p>
-            )}
-          </div>
-
-          {/* Objective */}
-          {/* <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Call Objective
-            </label>
-            <input
-              type="text"
-              {...register("objective", { required: "Objective is required" })}
-              className={`w-full px-4 py-2 border rounded-md hover:border-blue-400 focus:outline-none focus:ring-1 focus:ring-[#3F3EED]  ${
-                errors.objective ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Schedule a meeting"
-            />
-            {errors.objective && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.objective.message}
-              </p>
-            )}
-        </div> */}
-
-          {/* Submit */}
-          <div className="flex justify-center">
-            {/* <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-blue-900 w-full cursor-pointer text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-1 focus:ring-blue-900  focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Initiating Call..." : "Initiate Call"}
-            </button> */}
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="relative px-6 py-3 bg-blue-900 w-full cursor-pointer text-white rounded-md overflow-hidden 
-             focus:outline-none focus:ring-1 focus:ring-blue-900 focus:ring-offset-2
-             transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {/* Hover Light Overlay */}
-              <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
-
-              <span className="relative z-10">
-                {isSubmitting ? "Initiating Call..." : "Initiate Call"}
-              </span>
-            </button>
-          </div>
-        </form>
-      </div>
-      {/* ==== Popup ==== */}
-      {openPopup && (
-        <div
-          className="fixed inset-0  flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm"
-          onClick={() => dispatch(togglePopup(false))}
-        >
-          <div
-            className="bg-white rounded-lg shadow-lg w-[50%] text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold mb-4 p-6">Call Initiated</h2>
-            <div className="flex flex-wrap items-center mb-4 px-6">
-              <span className="font-medium">Call ID:</span>
-              <span className="md:px-3 md:mx-5 py-1 bg-gray-100 rounded">
-                {callId}
-              </span>
+          <div className="space-y-2">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Call Context & Prompt Override</label>
+            <div className="relative group/input">
+              <MessageSquare className="absolute left-5 top-6 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+              <textarea
+                rows={4}
+                placeholder="Specific instructions for this call session..."
+                {...register("context", { required: "Context is required" })}
+                className="w-full bg-slate-900/40 border border-slate-700/40 text-white pl-14 pr-6 py-5 rounded-[2rem] outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600 font-medium leading-relaxed resize-none"
+              />
             </div>
-            {/* Transcript Box */}
-            {/* <div className="flex justify-between border border-purple-200 bg-purple-50 px-6 p-2">
-              <p className="text-base font-semibold text-[#391f52] text-start mb-1 ">
-                Call Transcript
-              </p>
-              <p className="text-base">
-                <span className="font-bold">Status:</span>{" "}
-                {status ?? "Pending..."}
-              </p>
-            </div> */}
-            <div className="rounded-lg">
-              {/* Caller Section */}
-              <div className="flex flex-col items-center justify-center py-5">
-                {/* Animated Circle */}
-                <div className="relative">
-                  {/* Outer Animated Pulse */}
-                  <span className="absolute inset-0 rounded-full bg-blue-900 opacity-60 animate-ping"></span>
+            {errors.context && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1">{errors.context.message}</p>}
+          </div>
 
-                  {/* Inner Static Circle */}
-                  <div className="w-20 h-20 rounded-full bg-blue-900 flex items-center justify-center shadow-md relative overflow-hidden">
-                    <IoCall color="white" size={30} />
-                  </div>
+          {/* Settings Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Target Language</label>
+              <div className="relative group/input">
+                <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <select
+                  {...register("language")}
+                  className="w-full appearance-none bg-slate-900/40 border border-slate-700/40 text-slate-200 pl-14 pr-10 py-4 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all font-bold text-sm cursor-pointer"
+                >
+                  <option value="en" className="bg-slate-900 text-white">English (US/UK)</option>
+                  <option value="es" className="bg-slate-900 text-white">Spanish (LATAM/ES)</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                  <ArrowRight size={14} className="rotate-90" />
                 </div>
-
-                {/* Status Below */}
-                <p className="mt-6 text-lg font-medium text-blue-900 animate-pulse">
-                  {status ?? "Connecting..."}
-                </p>
               </div>
             </div>
 
-            {/* <div className="p-6 max-h-96 overflow-y-auto border-t border-blue-200 bg-blue-50 "> */}
-            <div className="text-gray-700 leading-relaxed">
-              {/* {Array.isArray(transcript) && transcript.length > 0 ? (
-                  <ul className="space-y-2"> */}
-              {/* {transcript.map((line, idx) => (
-                      <li key={idx} className="text-sm">
-                        {typeof line === "object" ? (
-                          <>
-                            <span className="font-semibold text-[#391f52]">
-                              {line.role}:
-                            </span>{" "}
-                            {line.text}
-                          </>
-                        ) : (
-                          <span>{line}</span>
-                        )}
-                      </li>
-                    ))} */}
-              {/* {Array.isArray(transcript) && transcript.length > 0 ? (
-                      <div className="space-y-1">
-                        {transcript.map((line, idx) => (
-                          <p key={idx} className="text-sm">
-                            <span className="font-semibold text-[#391f52]">
-                              {line.role}:
-                            </span>{" "}
-                            {line.text}
-                          </p>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 text-sm">
-                        No transcript yet...
-                      </p>
-                    )}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500 text-sm">No transcript yet...</p>
-                )} */}
-            </div>
-            {/* </div> */}
-
-            {/* <div className="flex-1 overflow-y-auto border rounded-md p-3 mb-4 bg-gray-50 text-left">
-              {transcript.length === 0 ? (
-                <p className="text-gray-500 text-sm">No transcript yet...</p>
-              ) : (
-                transcript.map((line, idx) => (
-                  <p key={idx} className="text-sm mb-1">
-                    {line}
-                  </p>
-                ))
-              )}
-            </div> */}
-            <div className="p-6 border-t border-blue-200 flex justify-center">
-              {/* <button
-                onClick={() => callId && handlePoll(callId)}
-                className="w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
-              >
-                Check Status Now
-              </button> */}
-              <button
-                onClick={() => callId && handlePoll(callId)}
-                className="relative w-full cursor-pointer sm:w-auto px-6 py-2 bg-blue-900 text-white rounded-lg 
-             transform hover:scale-105 transition-all duration-200 font-medium shadow-lg overflow-hidden"
-              >
-                {/* White overlay on hover */}
-                <span className="absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-300"></span>
-
-                <span className="relative z-10">Check Status Now</span>
-              </button>
-
-              <button
-                onClick={() => dispatch(togglePopup(false))}
-                className="ml-4 px-6 py-2 bg-gray-200 border hover:bg-white text-black rounded-lg cursor-pointer"
-              >
-                Close
-              </button>
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Agent Personality</label>
+              <div className="relative group/input">
+                <Mic className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
+                <select
+                  {...register("voice", { required: "Agent selection required" })}
+                  className="w-full appearance-none bg-slate-900/40 border border-slate-700/40 text-slate-200 pl-14 pr-10 py-4 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all font-bold text-sm cursor-pointer"
+                >
+                  {watch("language") === "es" ? (
+                    <>
+                      <option value="" className="bg-slate-900">Select Spanish Agent</option>
+                      <option value="julio" className="bg-slate-900 text-blue-400">Julio - Professional Male</option>
+                      <option value="donato" className="bg-slate-900 text-blue-400">Donato - Dynamic Male</option>
+                      <option value="helena-spanish" className="bg-slate-900 text-pink-400">Helena - Soft Female</option>
+                      <option value="rosa" className="bg-slate-900 text-pink-400">Rosa - Friendly Female</option>
+                      <option value="mariam" className="bg-slate-900 text-pink-400">Mariam - Formal Female</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="" className="bg-slate-900">Select English Agent</option>
+                      <option value="david" className="bg-slate-900 text-blue-400">David - Senior Male</option>
+                      <option value="ravi" className="bg-slate-900 text-blue-400">Ravi - Friendly Male</option>
+                      <option value="emily-british" className="bg-slate-900 text-pink-400">Emily - British Female</option>
+                      <option value="alice-british" className="bg-slate-900 text-pink-400">Alice - Formal British</option>
+                      <option value="julia-british" className="bg-slate-900 text-pink-400">Julia - Energetic British</option>
+                    </>
+                  )}
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                  <ArrowRight size={14} className="rotate-90" />
+                </div>
+              </div>
+              {errors.voice && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1">{errors.voice.message}</p>}
             </div>
           </div>
-        </div>
-      )}
-    </>
+
+          {/* Submit */}
+          <div className="pt-6">
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: 1.02, boxShadow: "0 20px 40px -15px rgba(14, 165, 233, 0.4)" }}
+              whileTap={{ scale: 0.98 }}
+              className={`w-full py-5 btn-gradient text-white rounded-[1.5rem] font-black uppercase tracking-widest text-sm flex items-center justify-center gap-4 transition-all ${loading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
+                }`}
+            >
+              {loading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <PhoneCall size={20} strokeWidth={3} />
+              )}
+              {loading ? "Establishing Secure Link..." : "Initiate AI Outreach"}
+            </motion.button>
+          </div>
+        </form>
+      </motion.div>
+
+      {/* Modern Pop-up Overlay */}
+      <AnimatePresence>
+        {openPopup && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl"
+            />
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              className="relative glass rounded-[3rem] p-10 w-full max-w-lg text-center shadow-2xl overflow-hidden"
+            >
+              {/* Animated Background Pulse */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-brand-primary/5 rounded-full blur-[100px] pointer-events-none" />
+
+              <div className="relative z-10 space-y-8">
+                <div className="flex justify-center flex-col items-center">
+                  <div className="relative mb-8">
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute inset-0 rounded-full bg-brand-primary opacity-20"
+                    />
+                    <div className="w-24 h-24 rounded-full bg-brand-primary/10 border-2 border-brand-primary flex items-center justify-center text-brand-primary shadow-2xl relative">
+                      <IoCall size={40} className="animate-wiggle" />
+                    </div>
+                  </div>
+                  <h2 className="text-3xl font-black text-white tracking-tight">Call in Progress</h2>
+                  <p className="text-slate-400 font-medium text-sm mt-2">Connecting to secure carrier network...</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="glass bg-slate-900/40 p-5 rounded-3xl flex items-center justify-between group">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Session Identifier</span>
+                    <span className="text-xs font-mono text-brand-primary font-bold group-hover:scale-110 transition-transform">{callId}</span>
+                  </div>
+
+                  <div className="glass bg-brand-primary/5 p-5 rounded-3xl flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Real-time Status</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                      <span className="text-xs font-black text-emerald-400 uppercase tracking-wider animate-pulse">
+                        {status || "Synchronizing..."}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => callId && handlePoll(callId)}
+                    className="w-full py-4 glass text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-800 transition-all border-slate-700"
+                  >
+                    <CheckCircle2 size={18} className="text-brand-primary" />
+                    Synchronize Status
+                  </motion.button>
+
+                  <button
+                    onClick={() => dispatch(togglePopup(false))}
+                    className="text-xs font-black text-slate-500 uppercase tracking-widest hover:text-rose-400 transition-colors py-2"
+                  >
+                    Minimize Session
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
+
+const PhoneCall = ({ size, strokeWidth }: { size?: number, strokeWidth?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={strokeWidth || 2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+  </svg>
+);
 
 export default CallForm;
