@@ -6,8 +6,8 @@ import {
   Menu,
   X,
   LayoutDashboard,
-  PhoneCall,
-  FileEdit,
+  // PhoneCall,
+  // FileEdit,
   LogOut,
   ChevronRight
 } from "lucide-react";
@@ -31,8 +31,8 @@ const Navbar = () => {
 
   const menuItems = [
     { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
-    { label: "Initiate Call", path: "/call", icon: <PhoneCall size={18} /> },
-    { label: "Add Prompt", path: "/add-prompt", icon: <FileEdit size={18} /> },
+    // { label: "Initiate Call", path: "/call", icon: <PhoneCall size={18} /> },
+    // { label: "Add Prompt", path: "/add-prompt", icon: <FileEdit size={18} /> },
   ];
 
   const handleLogout = () => {
@@ -71,8 +71,8 @@ const Navbar = () => {
                   <Link
                     to={item.path}
                     className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 overflow-hidden group ${isActive
-                        ? "text-brand-primary bg-brand-primary/10"
-                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+                      ? "text-brand-primary bg-brand-primary/10"
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
                       }`}
                   >
                     {item.icon}
@@ -153,8 +153,8 @@ const Navbar = () => {
                         to={item.path}
                         onClick={() => setMenuOpen(false)}
                         className={`flex items-center justify-between px-6 py-4 rounded-2xl font-bold transition-all ${isActive
-                            ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
-                            : "text-slate-400 hover:bg-slate-800/40"
+                          ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
+                          : "text-slate-400 hover:bg-slate-800/40"
                           }`}
                       >
                         <div className="flex items-center gap-4">
