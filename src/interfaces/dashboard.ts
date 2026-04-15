@@ -119,7 +119,7 @@ export interface Transcript {
 
 // Single Call record
 export interface Call {
-  id: number;
+  transcript: any;
   call_id: string;
   status:
     | "completed"
@@ -131,25 +131,19 @@ export interface Call {
     | "connected"
     | null;
   duration: number | null;
-  transcript: Transcript | null; // ✅ Changed here
+  transcript_text: string | null;
   summary: string | null;
   recording_url: string | null;
-  created_at: string;
   started_at: string | null;
   ended_at: string | null;
-  voice_id: string;
-  voice_name: string;
-  from_number: string | null;
-  to_number: string | null;
-  user_id: number;
-  username: string;
-  email: string;
+  agent_phone: string | null;
+  caller_phone: string | null;
 }
 
 // Pagination info
 export interface Pagination {
   page: number;
-  perPage: number;
+  page_size: number;
   total: number;
   completed_calls: number;
   not_completed_calls: number;

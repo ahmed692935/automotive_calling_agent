@@ -9,11 +9,13 @@ import {
   // PhoneCall,
   // FileEdit,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Calendar
 } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
 import SumaLogo from "/images/SumaWhite.jpeg";
+
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,6 +33,7 @@ const Navbar = () => {
 
   const menuItems = [
     { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
+    { label: "Appointments", path: "/appointments", icon: <Calendar size={18} /> },
     // { label: "Initiate Call", path: "/call", icon: <PhoneCall size={18} /> },
     // { label: "Add Prompt", path: "/add-prompt", icon: <FileEdit size={18} /> },
   ];

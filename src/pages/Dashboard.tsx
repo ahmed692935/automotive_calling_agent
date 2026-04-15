@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSXElementConstructor, type Key, type ReactElement, type ReactNode, type ReactPortal } from "react";
 import type {
   DashboardReportsResponse,
   RowData,
@@ -11,7 +11,6 @@ import {
   fetchCallHistory,
   fetchDashboardCallById,
   fetchDashboardReports,
-  fetchRecordingStream,
 } from "../api/dashboard";
 import {
   fetchCallsFailure,
@@ -29,12 +28,11 @@ const Dashboard = () => {
     "transcription"
   );
   const [transcriptLoading, setTranscriptLoading] = useState(false);
-  const [loadingRecordings, setLoadingRecordings] = useState<string | null>(
-    null
-  );
   const [reportsLoading, setReportsLoading] = useState(false);
   const [reportsError, setReportsError] = useState<string | null>(null);
   const [reports, setReports] = useState<DashboardReportsResponse | null>(null);
+  const [openRecordingModal, setOpenRecordingModal] = useState(false);
+  const [currRecordingUrl, setCurrRecordingUrl] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
   const { calls, loading, error } = useSelector(
@@ -172,24 +170,24 @@ const Dashboard = () => {
               ended_at: data.ended_at ?? prev.ended_at,
               duration: data.duration ?? prev.duration,
               recording_url: data.recording_url ?? prev.recording_url,
-              from_number: data.agent_phone ?? prev.from_number,
-              to_number: data.caller_phone ?? prev.to_number,
-              transcript: normalizeTranscript(data.transcript),
-              summary: data.summary ?? prev.summary,
-            }
-          : {
-              ...row,
-              call_id: data.call_id ?? row.call_id,
-              status: data.status ?? row.status,
-              started_at: data.started_at ?? row.started_at,
-              ended_at: data.ended_at ?? row.ended_at,
-              duration: data.duration ?? row.duration,
-              recording_url: data.recording_url ?? row.recording_url,
-              from_number: data.agent_phone ?? row.from_number,
-              to_number: data.caller_phone ?? row.to_number,
-              transcript: normalizeTranscript(data.transcript),
-              summary: data.summary ?? row.summary,
-            }
+               agent_phone: data.agent_phone ?? prev.agent_phone,
+               caller_phone: data.caller_phone ?? prev.caller_phone,
+               transcript: normalizeTranscript(data.transcript || row.transcript_text),
+               summary: data.summary ?? prev.summary,
+             }
+           : {
+               ...row,
+               call_id: data.call_id ?? row.call_id,
+               status: data.status ?? row.status,
+               started_at: data.started_at ?? row.started_at,
+               ended_at: data.ended_at ?? row.ended_at,
+               duration: data.duration ?? row.duration,
+               recording_url: data.recording_url ?? row.recording_url,
+               agent_phone: data.agent_phone ?? row.agent_phone,
+               caller_phone: data.caller_phone ?? row.caller_phone,
+               transcript: normalizeTranscript(data.transcript || row.transcript_text),
+               summary: data.summary ?? row.summary,
+             }
       );
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
@@ -204,21 +202,13 @@ const Dashboard = () => {
     setSelectedRow(null);
   };
 
-  const handleListenRecording = async (callId: string) => {
-    if (!token) {
-      toast.error("Missing authentication token");
+  const handleListenRecording = (url: string | null) => {
+    if (!url) {
+      toast.error("Recording URL not available");
       return;
     }
-    setLoadingRecordings(callId);
-    try {
-      const audioUrl = await fetchRecordingStream(callId, token);
-      window.open(audioUrl, "_blank");
-    } catch (err) {
-      const error = err as AxiosError<{ error: string }>;
-      toast.error(error?.response?.data?.error || "Recording Not Found or wait sometime for proper loading");
-    } finally {
-      setLoadingRecordings(null);
-    }
+    setCurrRecordingUrl(url);
+    setOpenRecordingModal(true);
   };
 
   const containerVariants = {
@@ -416,7 +406,7 @@ const Dashboard = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-900/50 border-b border-slate-800">
-                {["User Info", "Agent", "Receiver", "Status", "Created At", "Recording", "Action"].map((h) => (
+                {["Call ID", "Duration", "Phone Number", "Status", "Started At", "Recording", "Action"].map((h) => (
                   <th key={h} className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[2px]">{h}</th>
                 ))}
               </tr>
@@ -438,15 +428,17 @@ const Dashboard = () => {
               ) : (
                 calls?.map((row) => (
                   <tr
-                    key={row.id}
+                    key={row.call_id}
                     className="group hover:bg-slate-800/20 transition-colors"
                   >
                     <td className="px-8 py-6">
-                      <div className="font-bold text-white">{row.username}</div>
-                      <div className="text-xs text-slate-500">{row.email}</div>
+                      <div className="font-bold text-white">#{row.call_id.slice(-6).toUpperCase()}</div>
+                      <div className="text-xs text-slate-500">{row.call_id}</div>
                     </td>
-                    <td className="px-8 py-6 text-sm font-semibold text-slate-300 capitalize">{row.voice_name}</td>
-                    <td className="px-8 py-6 text-sm font-mono text-slate-400">{row.to_number}</td>
+                    <td className="px-8 py-6 text-sm font-semibold text-slate-300 capitalize">
+                      {row.duration ? `${Math.floor(row.duration / 60)}m ${Math.floor(row.duration % 60)}s` : "0s"}
+                    </td>
+                    <td className="px-8 py-6 text-sm font-mono text-slate-400">{row.caller_phone || "N/A"}</td>
                     <td className="px-8 py-6">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
                         ${row.status === "completed" || row.status === "connected" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : 
@@ -461,15 +453,10 @@ const Dashboard = () => {
                     </td>
                     <td className="px-8 py-6">
                       <button
-                        onClick={() => handleListenRecording(row.call_id)}
-                        disabled={loadingRecordings === row.call_id}
+                        onClick={() => handleListenRecording(row.recording_url)}
                         className="flex items-center gap-2 text-brand-primary text-xs font-bold hover:text-white transition-colors group/btn"
                       >
-                        {loadingRecordings === row.call_id ? (
-                          <div className="w-4 h-4 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <FiPlay className="group-hover/btn:scale-125 transition-transform" />
-                        )}
+                        <FiPlay className="group-hover/btn:scale-125 transition-transform" />
                         Listen
                       </button>
                     </td>
@@ -493,7 +480,7 @@ const Dashboard = () => {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all transition-all active:scale-95"
+            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all active:scale-95"
           >
             Previous
           </button>
@@ -511,7 +498,7 @@ const Dashboard = () => {
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages || totalPages === 0}
-            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all transition-all active:scale-95"
+            className="px-6 py-2 glass rounded-xl text-sm font-bold disabled:opacity-30 hover:bg-slate-800/60 transition-all active:scale-95"
           >
             Next
           </button>
@@ -553,10 +540,10 @@ const Dashboard = () => {
 
               <div className="p-8 grid grid-cols-2 md:grid-cols-4 gap-6 bg-slate-900/30">
                 {[
-                  { label: "Agent", val: selectedRow.voice_name },
-                  { label: "Phone", val: selectedRow.to_number },
+                  { label: "Agent", val: selectedRow.agent_phone || "AI Agent" },
+                  { label: "Phone", val: selectedRow.caller_phone || "N/A" },
                   { label: "Status", val: selectedRow.status },
-                  { label: "Language", val: "English" },
+                  { label: "Duration", val: selectedRow.duration ? `${Math.floor(selectedRow.duration / 60)}m ${Math.floor(selectedRow.duration % 60)}s` : "0s" },
                 ].map((d, i) => (
                   <div key={i}>
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-1">{d.label}</p>
@@ -592,7 +579,7 @@ const Dashboard = () => {
                   <div className="space-y-4">
                     {activeTab === "transcription" ? (
                       selectedRow.transcript?.items?.length ? (
-                        selectedRow.transcript.items.map((item, idx) => (
+                        selectedRow.transcript.items.map((item: { role: string; content: string | number | bigint | boolean | any[] | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, idx: Key | null | undefined) => (
                           <div key={idx} className={`flex gap-4 ${item.role === 'assistant' ? 'flex-row' : 'flex-row-reverse'}`}>
                             <div className={`p-4 rounded-3xl max-w-[80%] ${item.role === 'assistant' ? 'glass bg-brand-primary/5 text-slate-200' : 'bg-slate-800/80 text-slate-300'}`}>
                               <p className="text-[10px] font-black uppercase tracking-widest mb-1 opacity-50">
@@ -620,6 +607,64 @@ const Dashboard = () => {
                   Close Insights
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Recording Player Modal */}
+      <AnimatePresence>
+        {openRecordingModal && currRecordingUrl && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+              onClick={() => setOpenRecordingModal(false)}
+            />
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-slate-900/90 border border-slate-800 w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden glass p-8"
+            >
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-brand-primary/10 rounded-2xl text-brand-primary">
+                    <FiPlay size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-white">Playback</h3>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Call Recording</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setOpenRecordingModal(false)} 
+                  className="p-3 glass rounded-2xl text-slate-400 hover:text-white transition-all active:scale-95"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="bg-slate-950/40 rounded-3xl p-6 border border-slate-800 mb-8 mt-4">
+                <audio 
+                  controls 
+                  autoPlay
+                  src={currRecordingUrl} 
+                  className="w-full h-12 accent-brand-primary"
+                >
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+
+              <button
+                onClick={() => setOpenRecordingModal(false)}
+                className="w-full py-4 btn-gradient text-white rounded-2xl font-bold shadow-xl shadow-brand-primary/20 active:scale-95"
+              >
+                Done Listening
+              </button>
             </motion.div>
           </div>
         )}

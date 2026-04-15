@@ -1,14 +1,17 @@
 import "./App.css";
+import { lazy } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import PublicRoute from "./routes/public";
 import { Toaster } from "react-hot-toast";
-import SignIn from "./pages/Auth/signIn";
-import SignUp from "./pages/Auth/signUp";
-import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./routes/private";
-import CallForm from "./pages/CallForm";
-import AddPrompt from "./pages/AddPrompt";
-import LandingPage from "./pages/LandingPage";
+const PublicRoute = lazy(() => import("./routes/public"));
+const SignIn = lazy(() => import("./pages/Auth/signIn"));
+const SignUp = lazy(() => import("./pages/Auth/signUp"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const PrivateRoute = lazy(() => import("./routes/private"));
+const CallForm = lazy(() => import("./pages/CallForm"));
+const AddPrompt = lazy(() => import("./pages/AddPrompt"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const Appointments = lazy(() => import("./pages/Appointments"));
+
 
 function App() {
   return (
@@ -53,6 +56,14 @@ function App() {
             element={
               <PrivateRoute>
                 <CallForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/appointments"
+            element={
+              <PrivateRoute>
+                <Appointments />
               </PrivateRoute>
             }
           />
