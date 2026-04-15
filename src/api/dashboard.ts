@@ -1,5 +1,9 @@
 // import axios from "axios";
 import axiosInstance from "./axiosInterceptor";
+import type {
+  DashboardCallDetailsResponse,
+  DashboardReportsResponse,
+} from "../interfaces/dashboard";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -53,5 +57,38 @@ export const fetchCallTranscript = async (callId: string, token: string) => {
     }
   );
 
+  return response.data;
+};
+
+export const fetchDashboardReports = async (
+  token: string,
+  periodDays = 7
+): Promise<DashboardReportsResponse> => {
+  const response = await axiosInstance.get(
+    `${API_URL}/dashboard/reports?period_days=${periodDays}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const fetchDashboardCallById = async (
+  callId: string,
+  token: string
+): Promise<DashboardCallDetailsResponse> => {
+  const response = await axiosInstance.get(`${API_URL}/dashboard/calls/${callId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
   return response.data;
 };

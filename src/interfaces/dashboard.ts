@@ -171,3 +171,60 @@ export interface CallHistoryState {
 }
 
 export type RowData = Call;
+
+export interface AppointmentStatusDistribution {
+  [status: string]: number;
+}
+
+export interface ReportSummary {
+  total_calls: number;
+  total_appointments: number;
+  total_minutes: number;
+  successful_calls: number;
+  unanswered_calls: number;
+  repeat_callers: number;
+  new_callers: number;
+  appointment_status_distribution: AppointmentStatusDistribution;
+}
+
+export interface TrendPoint {
+  date: string;
+  count: number;
+}
+
+export interface RepeatCaller {
+  phone: string;
+  name: string;
+  call_count: number;
+}
+
+export interface SentimentBreakdown {
+  positive?: number;
+  neutral?: number;
+  negative?: number;
+  [key: string]: number | undefined;
+}
+
+export interface DashboardReportsResponse {
+  period_days: number;
+  summary: ReportSummary;
+  calls_over_time: TrendPoint[];
+  appointments_over_time: TrendPoint[];
+  top_repeat_callers: RepeatCaller[];
+  sentiment_breakdown: SentimentBreakdown;
+}
+
+export interface DashboardCallDetailsResponse {
+  call_id: string;
+  status: Call["status"];
+  caller_phone: string | null;
+  agent_phone: string | null;
+  started_at: string | null;
+  ended_at: string | null;
+  duration: number | null;
+  recording_url: string | null;
+  transcript: Transcript | string | null;
+  summary: string | null;
+  sentiment: string | null;
+  booking_done: boolean;
+}

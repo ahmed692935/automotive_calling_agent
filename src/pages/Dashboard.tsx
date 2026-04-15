@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import type { RowData } from "../interfaces/dashboard";
+import type {
+  DashboardReportsResponse,
+  RowData,
+  Transcript,
+} from "../interfaces/dashboard";
 import { FiCheckCircle, FiPhone, FiXCircle, FiPlay, FiInfo, FiLayers } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
 import {
   fetchCallHistory,
-  fetchCallTranscript,
+  fetchDashboardCallById,
+  fetchDashboardReports,
   fetchRecordingStream,
 } from "../api/dashboard";
 import {
@@ -27,6 +32,9 @@ const Dashboard = () => {
   const [loadingRecordings, setLoadingRecordings] = useState<string | null>(
     null
   );
+  const [reportsLoading, setReportsLoading] = useState(false);
+  const [reportsError, setReportsError] = useState<string | null>(null);
+  const [reports, setReports] = useState<DashboardReportsResponse | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
   const { calls, loading, error } = useSelector(
@@ -77,6 +85,71 @@ const Dashboard = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    const loadReports = async () => {
+      if (!token) return;
+      setReportsLoading(true);
+      setReportsError(null);
+      try {
+        const data = await fetchDashboardReports(token, 7);
+        setReports(data);
+      } catch (err: unknown) {
+        let errorMessage = "Failed to fetch dashboard reports";
+        if (err instanceof Error) errorMessage = err.message;
+        setReportsError(errorMessage);
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+    loadReports();
+  }, [token]);
+
+  useEffect(() => {
+    if (reportsError) {
+      toast.error(reportsError);
+    }
+  }, [reportsError]);
+
+  const normalizeTranscript = (
+    transcript: string | Transcript | null | undefined
+  ): Transcript | null => {
+    if (!transcript) return null;
+    if (typeof transcript !== "string") return transcript;
+
+    const items = transcript
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const agentPrefix = "Agent:";
+        const callerPrefix = "Caller:";
+
+        if (line.startsWith(agentPrefix)) {
+          return {
+            role: "assistant",
+            content: line.slice(agentPrefix.length).trim(),
+          };
+        }
+
+        if (line.startsWith(callerPrefix)) {
+          return {
+            role: "user",
+            content: line.slice(callerPrefix.length).trim(),
+          };
+        }
+
+        return {
+          role: "assistant",
+          content: line,
+        };
+      });
+
+    return {
+      items,
+      note: "",
+    };
+  };
+
   const handleOpenModal = async (row: RowData) => {
     setSelectedRow(row);
     setActiveTab("transcription");
@@ -88,15 +161,39 @@ const Dashboard = () => {
     }
     setTranscriptLoading(true);
     try {
-      const data = await fetchCallTranscript(row.call_id, token);
+      const data = await fetchDashboardCallById(row.call_id, token);
       setSelectedRow((prev) =>
         prev
-          ? { ...prev, transcript: data.transcript }
-          : { ...row, transcript: data.transcript }
+          ? {
+              ...prev,
+              call_id: data.call_id ?? prev.call_id,
+              status: data.status ?? prev.status,
+              started_at: data.started_at ?? prev.started_at,
+              ended_at: data.ended_at ?? prev.ended_at,
+              duration: data.duration ?? prev.duration,
+              recording_url: data.recording_url ?? prev.recording_url,
+              from_number: data.agent_phone ?? prev.from_number,
+              to_number: data.caller_phone ?? prev.to_number,
+              transcript: normalizeTranscript(data.transcript),
+              summary: data.summary ?? prev.summary,
+            }
+          : {
+              ...row,
+              call_id: data.call_id ?? row.call_id,
+              status: data.status ?? row.status,
+              started_at: data.started_at ?? row.started_at,
+              ended_at: data.ended_at ?? row.ended_at,
+              duration: data.duration ?? row.duration,
+              recording_url: data.recording_url ?? row.recording_url,
+              from_number: data.agent_phone ?? row.from_number,
+              to_number: data.caller_phone ?? row.to_number,
+              transcript: normalizeTranscript(data.transcript),
+              summary: data.summary ?? row.summary,
+            }
       );
     } catch (err) {
       const error = err as AxiosError<{ error: string }>;
-      toast.error(error?.response?.data?.error || "Failed to load transcript");
+      toast.error(error?.response?.data?.error || "Failed to load call details");
     } finally {
       setTranscriptLoading(false);
     }
@@ -176,6 +273,129 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
+      </motion.div>
+
+      {/* Reports Section */}
+      <motion.div variants={itemVariants} className="glass rounded-[2.5rem] overflow-hidden border-slate-800/50 shadow-2xl">
+        <div className="p-8 border-b border-slate-800/50 flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
+              <FiLayers size={20} />
+            </div>
+            <h2 className="text-xl font-bold text-white">Reports ({reports?.period_days ?? 7} days)</h2>
+          </div>
+          {reportsLoading ? (
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Loading...</span>
+          ) : null}
+        </div>
+
+        <div className="p-8 space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Total Calls", value: reports?.summary.total_calls ?? 0 },
+              { label: "Appointments", value: reports?.summary.total_appointments ?? 0 },
+              { label: "Total Minutes", value: reports?.summary.total_minutes?.toFixed(2) ?? "0.00" },
+              { label: "Successful", value: reports?.summary.successful_calls ?? 0 },
+              { label: "Unanswered", value: reports?.summary.unanswered_calls ?? 0 },
+              { label: "Repeat Callers", value: reports?.summary.repeat_callers ?? 0 },
+              { label: "New Callers", value: reports?.summary.new_callers ?? 0 },
+            ].map((metric) => (
+              <div key={metric.label} className="glass rounded-2xl p-4 border border-slate-800/60">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-2">{metric.label}</p>
+                <p className="text-2xl font-black text-white tracking-tight">{metric.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="glass rounded-2xl p-5 border border-slate-800/60">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-4">Calls Over Time</p>
+              <div className="space-y-2">
+                {reports?.calls_over_time?.length ? (
+                  reports.calls_over_time.map((point) => (
+                    <div key={point.date} className="flex items-center justify-between text-sm">
+                      <span className="text-slate-400">{point.date}</span>
+                      <span className="text-white font-bold">{point.count}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 text-sm italic">No data available</p>
+                )}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-5 border border-slate-800/60">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-4">Appointments Over Time</p>
+              <div className="space-y-2">
+                {reports?.appointments_over_time?.length ? (
+                  reports.appointments_over_time.map((point) => (
+                    <div key={point.date} className="flex items-center justify-between text-sm">
+                      <span className="text-slate-400">{point.date}</span>
+                      <span className="text-white font-bold">{point.count}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 text-sm italic">No data available</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="glass rounded-2xl p-5 border border-slate-800/60">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-4">Top Repeat Callers</p>
+              <div className="space-y-2">
+                {reports?.top_repeat_callers?.length ? (
+                  reports.top_repeat_callers.map((caller) => (
+                    <div key={caller.phone} className="flex items-center justify-between gap-4 text-sm">
+                      <div className="min-w-0">
+                        <p className="text-white font-semibold truncate">
+                          {caller.name?.trim() ? caller.name : "Unknown"}
+                        </p>
+                        <p className="text-slate-500 text-xs">{caller.phone}</p>
+                      </div>
+                      <span className="text-brand-primary font-black">{caller.call_count}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 text-sm italic">No repeat callers yet</p>
+                )}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-5 border border-slate-800/60">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-4">Sentiment Breakdown</p>
+              <div className="space-y-2">
+                {Object.entries(reports?.sentiment_breakdown ?? {}).length ? (
+                  Object.entries(reports?.sentiment_breakdown ?? {}).map(([label, value]) => (
+                    <div key={label} className="flex items-center justify-between text-sm">
+                      <span className="text-slate-400 capitalize">{label}</span>
+                      <span className="text-white font-bold">{value ?? 0}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 text-sm italic">No sentiment data available</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="glass rounded-2xl p-5 border border-slate-800/60">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[2px] mb-4">Appointment Status Distribution</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {Object.entries(reports?.summary.appointment_status_distribution ?? {}).length ? (
+                Object.entries(reports?.summary.appointment_status_distribution ?? {}).map(([label, value]) => (
+                  <div key={label} className="bg-slate-900/60 rounded-xl px-4 py-3 flex items-center justify-between">
+                    <span className="text-slate-400 text-sm capitalize">{label.replaceAll("_", " ")}</span>
+                    <span className="text-white font-black">{value}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-500 text-sm italic">No appointment status data available</p>
+              )}
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Table Section */}
