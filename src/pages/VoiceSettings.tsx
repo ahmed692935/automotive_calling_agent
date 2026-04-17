@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMusic, FiCheck, FiPlay, FiSettings, FiMic } from "react-icons/fi";
+import { FiMusic, FiCheck, FiPlay, FiMic } from "react-icons/fi";
 import toast from "react-hot-toast";
 import type { RootState } from "../store/store";
 import { getVoices, updateVoice } from "../api/retell";
