@@ -46,7 +46,7 @@ function UseCases() {
   ];
 
   return (
-    <section id="about" className="relative py-24 px-6 md:px-12 bg-[#020617]">
+    <section id="about" className="relative py-24 px-6 md:px-12 bg-[#f8fafc]">
       <div className="relative max-w-7xl mx-auto z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
@@ -65,7 +65,7 @@ function UseCases() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-3xl md:text-6xl font-black mt-6 text-white leading-[1.1]"
+              className="text-3xl md:text-6xl font-black mt-6 text-slate-950 leading-[1.1]"
             >
               Tailored for <br />
               <span className="text-gradient">Every Industry.</span>
@@ -103,11 +103,11 @@ function UseCases() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="mt-20 p-8 glass rounded-[3rem] border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden group"
+          className="mt-20 p-8 glass rounded-[3rem] border-slate-200 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden group"
         >
          
           <div className="relative z-10 flex flex-col items-center md:items-start">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Ready to transform your workflow?</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-950 mb-2">Ready to transform your workflow?</h3>
             <p className="text-slate-400">Join 100+ businesses automating their calls today.</p>
           </div>
 

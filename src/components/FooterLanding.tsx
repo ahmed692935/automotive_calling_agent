@@ -1,6 +1,7 @@
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { Mail, ArrowUpRight } from "lucide-react";
-import SumaLogo from "/images/SumaWhite.jpeg";
+// import SumaLogo from "/images/sumaLogo.png";
+import SumaLogo from "/images/SUMA_BlackLogo.svg"
 
 function FooterLanding() {
   const footerLinks = {
@@ -32,7 +33,7 @@ function FooterLanding() {
   ];
 
   return (
-    <footer className="relative bg-[#020617] pt-24 pb-12 px-6 md:px-12 overflow-hidden border-t border-slate-900">
+    <footer className="relative bg-white pt-24 pb-12 px-6 md:px-12 overflow-hidden border-t border-slate-200">
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
       
@@ -58,7 +59,7 @@ function FooterLanding() {
                 <a 
                   key={i} 
                   href={social.href} 
-                  className="w-10 h-10 rounded-xl glass border-slate-800 flex items-center justify-center text-slate-400 hover:text-brand-primary hover:border-brand-primary transition-all shadow-xl"
+                  className="w-10 h-10 rounded-xl glass border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-primary hover:border-brand-primary transition-all shadow-xl"
                 >
                   {social.icon}
                 </a>
@@ -68,11 +69,11 @@ function FooterLanding() {
 
           {/* Links Sections */}
           <div className="lg:col-span-2">
-            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Company</h4>
+            <h4 className="text-slate-950 font-black uppercase tracking-[2px] text-[10px] mb-6">Company</h4>
             <ul className="flex flex-col gap-4">
               {footerLinks.Company.map((link, i) => (
                 <li key={i}>
-                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors flex items-center gap-1 group">
+                  <a href={link.href} className="text-slate-500 text-sm hover:text-brand-primary transition-colors flex items-center gap-1 group">
                     {link.label}
                     <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all -translate-y-1" />
                   </a>
@@ -82,11 +83,11 @@ function FooterLanding() {
           </div>
 
           <div className="lg:col-span-2">
-            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Industries</h4>
+            <h4 className="text-slate-950 font-black uppercase tracking-[2px] text-[10px] mb-6">Industries</h4>
             <ul className="flex flex-col gap-4">
               {footerLinks.Industries.map((link, i) => (
                 <li key={i}>
-                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-slate-500 text-sm hover:text-brand-primary transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -95,11 +96,11 @@ function FooterLanding() {
           </div>
 
           <div className="lg:col-span-2">
-            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Legal</h4>
+            <h4 className="text-slate-950 font-black uppercase tracking-[2px] text-[10px] mb-6">Legal</h4>
             <ul className="flex flex-col gap-4">
               {footerLinks.Legal.map((link, i) => (
                 <li key={i}>
-                  <a href={link.href} className="text-slate-400 text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-slate-500 text-sm hover:text-brand-primary transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -109,15 +110,15 @@ function FooterLanding() {
 
           {/* Contact & Newsletter */}
           <div className="lg:col-span-2">
-            <h4 className="text-white font-black uppercase tracking-[2px] text-[10px] mb-6">Support</h4>
+            <h4 className="text-slate-950 font-black uppercase tracking-[2px] text-[10px] mb-6">Support</h4>
             <div className="flex flex-col gap-4">
-              <a href="mailto:pia@bysuma.com" className="flex items-center gap-3 glass border-slate-800 p-4 rounded-2xl hover:border-brand-primary transition-all group">
+              <a href="mailto:pia@bysuma.com" className="flex items-center gap-3 glass border-slate-200 p-4 rounded-2xl hover:border-brand-primary transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
                   <Mail size={16} />
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 font-bold uppercase">Email Us</p>
-                  <p className="text-xs font-bold text-white group-hover:text-brand-primary">pia@bysuma.com</p>
+                  <p className="text-xs font-bold text-slate-950 group-hover:text-brand-primary">pia@bysuma.com</p>
                 </div>
               </a>
             </div>
@@ -125,7 +126,7 @@ function FooterLanding() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-slate-500 text-xs">
             © {new Date().getFullYear()} Suma.ai. All rights reserved.
           </p>

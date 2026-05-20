@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #0ea5e9;
-  --color-brand-secondary: #6366f1;
-  --color-brand-accent: #f43f5e;
-  --color-dark-bg: #020617;
-  --color-dark-card: #1e293b;
-  --color-glass-bg: rgba(15, 23, 42, 0.7);
-  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-brand-primary: #2563eb;
+  --color-brand-secondary: #14b8a6;
+  --color-brand-accent: #f97316;
+  --color-dark-bg: #f8fafc;
+  --color-dark-card: #ffffff;
+  --color-glass-bg: rgba(255, 255, 255, 0.82);
+  --color-glass-border: rgba(148, 163, 184, 0.22);
   --color-blue-900: #1e3a8a;
 }
 
@@ -16,9 +16,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
-  color: #f8fafc;
-  background-color: #020617;
+  color-scheme: light;
+  color: #0f172a;
+  background-color: #f8fafc;
 
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -28,43 +28,50 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #020617;
+  background-color: #f8fafc;
   overflow-x: hidden;
 }
 
 /* Glassmorphism Utility */
 .glass {
-  background: rgba(30, 41, 59, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
 }
 
 .glass-nav {
-  background: rgba(2, 6, 23, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 14px 45px rgba(15, 23, 42, 0.08);
 }
 
 /* Gradients */
 .bg-gradient-mesh {
-  background-color: #020617;
+  background-color: #f8fafc;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.1) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.1) 0, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(244, 63, 94, 0.05) 0, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.12) 0, transparent 45%), 
+    radial-gradient(at 100% 0%, rgba(20, 184, 166, 0.13) 0, transparent 45%),
+    radial-gradient(at 50% 100%, rgba(249, 115, 22, 0.08) 0, transparent 48%);
 }
 
 .text-gradient {
-  background: linear-gradient(to right, #38bdf8, #818cf8);
+  background: linear-gradient(135deg, #2563eb, #14b8a6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .btn-gradient {
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
   transition: all 0.3s ease;
+}
+
+.btn-gradient,
+.btn-gradient * {
+  color: #ffffff !important;
 }
 
 .btn-gradient:hover {
@@ -78,14 +85,119 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: #f8fafc;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
+}
+
+/* Light SaaS theme bridge for existing Tailwind utility classes */
+.bg-\[\#020617\],
+.bg-slate-950,
+.bg-slate-900,
+.bg-slate-800 {
+  background-color: #f8fafc !important;
+}
+
+.bg-slate-950\/80 {
+  background-color: rgba(15, 23, 42, 0.28) !important;
+}
+
+.bg-slate-950\/40,
+.bg-slate-950\/20,
+.bg-slate-900\/90,
+.bg-slate-900\/60,
+.bg-slate-900\/50,
+.bg-slate-900\/40,
+.bg-slate-900\/30,
+.bg-slate-800\/80,
+.bg-slate-800\/60,
+.bg-slate-800\/50,
+.bg-slate-800\/40,
+.bg-slate-800\/20 {
+  background-color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.hover\:bg-slate-800\/60:hover,
+.hover\:bg-slate-800\/50:hover,
+.hover\:bg-slate-800\/40:hover,
+.hover\:bg-slate-800:hover,
+.hover\:bg-slate-700\/50:hover {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+}
+
+.text-white,
+.text-slate-100,
+.text-slate-200,
+.text-slate-300 {
+  color: #0f172a !important;
+}
+
+.text-slate-400 {
+  color: #475569 !important;
+}
+
+.text-slate-500,
+.text-slate-600 {
+  color: #64748b !important;
+}
+
+.hover\:text-white:hover,
+.hover\:text-slate-300:hover,
+.hover\:text-slate-200:hover {
+  color: #2563eb !important;
+}
+
+.border-slate-900,
+.border-slate-800,
+.border-slate-800\/60,
+.border-slate-800\/50,
+.border-slate-700,
+.border-slate-700\/50,
+.border-slate-700\/40 {
+  border-color: rgba(203, 213, 225, 0.8) !important;
+}
+
+.divide-slate-800\/30 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(226, 232, 240, 0.9) !important;
+}
+
+.placeholder\:text-slate-600::placeholder {
+  color: #94a3b8 !important;
+}
+
+input,
+textarea,
+select {
+  color: #0f172a;
+}
+
+option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+table tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.045) !important;
+}
+
+.shadow-2xl,
+.shadow-xl {
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08) !important;
+}
+
+.bg-brand-primary.text-white,
+.bg-brand-primary .text-white,
+.btn-gradient.text-white {
+  color: #ffffff !important;
 }

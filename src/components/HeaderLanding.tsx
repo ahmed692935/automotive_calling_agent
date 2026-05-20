@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown, UserCircle, LogOut, LayoutDashboard } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
-import SumaLogo from "/images/SumaWhite.jpeg";
-import SumaBlack from "/images/sumaLogo.png";
+// import SumaBlack from "/images/sumaLogo.png";
+import SumaBlack from "/images/SUMA_BlackLogo.svg"
 
 function HeaderLanding() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,7 +32,7 @@ function HeaderLanding() {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const navItemVariants = {
-    hover: { scale: 1.05, color: "#38bdf8" },
+    hover: { scale: 1.05, color: "#2563eb" },
     tap: { scale: 0.95 }
   };
 
@@ -48,7 +48,7 @@ function HeaderLanding() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
           <img
-            src={isScrolled ? SumaBlack : SumaLogo}
+            src={SumaBlack}
             alt="Suma Logo"
             className="h-8 sm:h-10 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-110"
           />
@@ -65,7 +65,7 @@ function HeaderLanding() {
                 whileTap="tap"
                 onClick={() => handleScrollToSection(item.toLowerCase())}
                 className="list-none cursor-pointer font-medium text-sm tracking-wide uppercase transition-colors"
-                style={{ color: isScrolled ? "#94a3b8" : "#f8fafc" }}
+                style={{ color: isScrolled ? "#475569" : "#334155" }}
               >
                 {item}
               </motion.li>
@@ -100,12 +100,12 @@ function HeaderLanding() {
                     >
                       <div className="p-3 border-b border-slate-700/50">
                         <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Signed in as</p>
-                        <p className="text-xs font-semibold truncate text-slate-200">{user.email}</p>
+                      <p className="text-xs font-semibold truncate text-slate-900">{user.email}</p>
                       </div>
                       <div className="p-2">
                         <Link
                           to="/dashboard"
-                          className="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all"
+                          className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-brand-primary hover:bg-brand-primary/5 rounded-xl transition-all"
                         >
                           <LayoutDashboard size={16} />
                           Dashboard
@@ -157,7 +157,7 @@ function HeaderLanding() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[90]"
+              className="fixed inset-0 bg-slate-950/30 backdrop-blur-md z-[90]"
             />
             <motion.div
               initial={{ x: "100%" }}
@@ -178,7 +178,7 @@ function HeaderLanding() {
                     <li
                       key={item}
                       onClick={() => handleScrollToSection(item.toLowerCase())}
-                      className="text-2xl font-bold text-slate-200 hover:text-brand-primary transition-colors cursor-pointer"
+                      className="text-2xl font-bold text-slate-800 hover:text-brand-primary transition-colors cursor-pointer"
                     >
                       {item}
                     </li>

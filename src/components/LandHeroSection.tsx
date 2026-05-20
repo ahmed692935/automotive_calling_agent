@@ -39,8 +39,8 @@ function LandHeroSection() {
           <source src={heroVideo} type="video/mp4" />
         </video>
         {/* Modern Mesh Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/50 to-[#020617]" />
-        <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-[#f8fafc]" />
+        <div className="absolute inset-0 bg-gradient-mesh opacity-70" />
       </div>
 
       {/* Header */}
@@ -73,7 +73,7 @@ function LandHeroSection() {
             variants={itemVariants}
             className="text-4xl sm:text-6xl md:text-8xl font-black leading-[1] tracking-tight mb-6"
           >
-            <span className="block text-white">Smarter Calls,</span>
+            <span className="block text-slate-950">Smarter Calls,</span>
             <span className="block text-gradient">Better Results.</span>
           </motion.h1>
 
@@ -105,7 +105,7 @@ function LandHeroSection() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full glass border-slate-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-800/50 transition-all"
+                className="w-full glass border-slate-200 text-slate-900 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-white transition-all"
               >
                 <PlayCircle className="text-brand-primary" />
                 Book a Demo
@@ -119,7 +119,7 @@ function LandHeroSection() {
             className="mt-16 flex flex-col items-center gap-4 opacity-50 hover:opacity-100 transition-opacity"
           >
             <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500">Trusted by modern startups</p>
-            <div className="flex flex-wrap justify-center gap-8 grayscale brightness-200">
+            <div className="flex flex-wrap justify-center gap-8 grayscale">
                {/* Logos would go here */}
             </div>
           </motion.div>
@@ -133,7 +133,7 @@ function LandHeroSection() {
         transition={{ delay: 2, duration: 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
       >
-        <div className="w-[30px] h-[50px] border-2 border-slate-700 rounded-full flex justify-center p-2">
+        <div className="w-[30px] h-[50px] border-2 border-slate-300 rounded-full flex justify-center p-2 bg-white/40">
           <motion.div
             animate={{ y: [0, 15, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
