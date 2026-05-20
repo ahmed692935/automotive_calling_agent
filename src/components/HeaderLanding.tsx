@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown, UserCircle, LogOut, LayoutDashboard } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
-// import SumaBlack from "/images/sumaLogo.png";
 import SumaBlack from "/images/SUMA_BlackLogo.svg"
 
 function HeaderLanding() {

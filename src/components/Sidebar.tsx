@@ -10,13 +10,12 @@ import {
   // FileEdit,
   LogOut,
   ChevronRight,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
 // import SumaLogo from "/images/sumaLogo.png";
-import SumaLogo from "/images/SUMA_BlackLogo.svg"
-
+import SumaLogo from "/images/SUMA_BlackLogo.svg";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,8 +32,16 @@ const Navbar = () => {
   }, []);
 
   const menuItems = [
-    { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
-    { label: "Appointments", path: "/appointments", icon: <Calendar size={18} /> },
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: <LayoutDashboard size={18} />,
+    },
+    {
+      label: "Appointments",
+      path: "/appointments",
+      icon: <Calendar size={18} />,
+    },
     // { label: "Initiate Call", path: "/call", icon: <PhoneCall size={18} /> },
     // { label: "Add Prompt", path: "/add-prompt", icon: <FileEdit size={18} /> },
   ];
@@ -47,21 +54,27 @@ const Navbar = () => {
 
   const navItemVariants = {
     hover: { x: 5, color: "#2563eb" },
-    tap: { scale: 0.95 }
+    tap: { scale: 0.95 },
   };
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-4 sm:px-8 py-3 ${isScrolled ? "glass-nav py-2 shadow-2xl" : "bg-white/80 backdrop-blur-xl border-b border-slate-200/70 py-4"
-        }`}
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 px-4 sm:px-8 py-3 ${
+        isScrolled
+          ? "glass-nav py-2 shadow-2xl"
+          : "bg-white/80 backdrop-blur-xl border-b border-slate-200/70 py-4"
+      }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95">
+        <Link
+          to="/"
+          className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95"
+        >
           <img
             src={SumaLogo}
             alt="Suma Logo"
-            className="h-8 sm:h-10 w-auto object-contain rounded-lg shadow-lg"
+            className="h-8 sm:h-9 w-auto object-contain"
           />
         </Link>
 
@@ -74,10 +87,11 @@ const Navbar = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 overflow-hidden group ${isActive
-                      ? "text-brand-primary bg-brand-primary/10"
-                      : "text-slate-500 hover:text-brand-primary hover:bg-brand-primary/5"
-                      }`}
+                    className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 overflow-hidden group ${
+                      isActive
+                        ? "text-brand-primary bg-brand-primary/10"
+                        : "text-slate-500 hover:text-brand-primary hover:bg-brand-primary/5"
+                    }`}
                   >
                     {item.icon}
                     {item.label}
@@ -101,14 +115,19 @@ const Navbar = () => {
               <span className="text-xs font-bold text-slate-900 uppercase tracking-tighter">
                 {user?.username || "Agent"}
               </span>
-              <span className="text-[10px] text-slate-500 font-medium">Online</span>
+              <span className="text-[10px] text-slate-500 font-medium">
+                Online
+              </span>
             </div>
             <button
               onClick={handleLogout}
               className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 transition-all shadow-xl group"
               title="Logout"
             >
-              <LogOut size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+              <LogOut
+                size={18}
+                className="group-hover:-translate-x-0.5 transition-transform"
+              />
             </button>
           </div>
         </div>
@@ -143,7 +162,10 @@ const Navbar = () => {
             >
               <div className="flex items-center justify-between mb-10">
                 <img src={SumaLogo} alt="Logo" className="h-8 rounded-lg" />
-                <button onClick={() => setMenuOpen(false)} className="p-2 glass rounded-lg text-slate-500">
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="p-2 glass rounded-lg text-slate-500"
+                >
                   <X size={20} />
                 </button>
               </div>
@@ -152,20 +174,29 @@ const Navbar = () => {
                 {menuItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
-                    <motion.div key={item.path} variants={navItemVariants} whileHover="hover" whileTap="tap">
+                    <motion.div
+                      key={item.path}
+                      variants={navItemVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                    >
                       <Link
                         to={item.path}
                         onClick={() => setMenuOpen(false)}
-                        className={`flex items-center justify-between px-6 py-4 rounded-2xl font-bold transition-all ${isActive
-                          ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
-                          : "text-slate-600 hover:bg-brand-primary/5"
-                          }`}
+                        className={`flex items-center justify-between px-6 py-4 rounded-2xl font-bold transition-all ${
+                          isActive
+                            ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
+                            : "text-slate-600 hover:bg-brand-primary/5"
+                        }`}
                       >
                         <div className="flex items-center gap-4">
                           {item.icon}
                           {item.label}
                         </div>
-                        <ChevronRight size={16} className={isActive ? "opacity-100" : "opacity-0"} />
+                        <ChevronRight
+                          size={16}
+                          className={isActive ? "opacity-100" : "opacity-0"}
+                        />
                       </Link>
                     </motion.div>
                   );
