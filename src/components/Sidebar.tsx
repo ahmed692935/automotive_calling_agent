@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronRight,
   Calendar,
+  Settings,
 } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
@@ -119,6 +120,17 @@ const Navbar = () => {
                 Online
               </span>
             </div>
+            <button
+              onClick={() => navigate("/settings")}
+              className={`p-2.5 rounded-xl border transition-all shadow-xl group ${
+                location.pathname === "/settings"
+                  ? "bg-brand-primary/10 border-brand-primary/30 text-brand-primary"
+                  : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+              }`}
+              title="Settings"
+            >
+              <Settings size={18} className="group-hover:rotate-45 transition-transform duration-500" />
+            </button>
             <button
               onClick={handleLogout}
               className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 transition-all shadow-xl group"

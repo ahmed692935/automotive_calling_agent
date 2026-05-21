@@ -11,7 +11,7 @@ const CallForm = lazy(() => import("./pages/CallForm"));
 const AddPrompt = lazy(() => import("./pages/AddPrompt"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Appointments = lazy(() => import("./pages/Appointments"));
-
+const Settings = lazy(() => import("./pages/Settings"));
 
 function App() {
   return (
@@ -64,6 +64,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Appointments />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <Settings />
               </PrivateRoute>
             }
           />
