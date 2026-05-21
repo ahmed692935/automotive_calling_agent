@@ -10,7 +10,8 @@ import {
   // FileEdit,
   LogOut,
   ChevronRight,
-  Calendar
+  Calendar,
+  Settings
 } from "lucide-react";
 import type { RootState } from "../store/store";
 import { logout } from "../store/slices/authSlice";
@@ -103,6 +104,17 @@ const Navbar = () => {
               <span className="text-[10px] text-slate-500 font-medium">Online</span>
             </div>
             <button
+              onClick={() => navigate("/settings")}
+              className={`p-2.5 rounded-xl border transition-all shadow-xl group ${
+                location.pathname === "/settings"
+                  ? "bg-brand-primary/10 border-brand-primary/30 text-brand-primary"
+                  : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+              }`}
+              title="Settings"
+            >
+              <Settings size={18} className="group-hover:rotate-45 transition-transform duration-500" />
+            </button>
+            <button
               onClick={handleLogout}
               className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all shadow-xl group"
               title="Logout"
@@ -172,6 +184,20 @@ const Navbar = () => {
               </div>
 
               <div className="mt-auto border-t border-slate-800 pt-6">
+                <button
+                  onClick={() => {
+                    navigate("/settings");
+                    setMenuOpen(false);
+                  }}
+                  className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all mb-3 ${
+                    location.pathname === "/settings"
+                      ? "bg-brand-primary text-white"
+                      : "bg-slate-900 text-slate-400 border border-slate-800"
+                  }`}
+                >
+                  <Settings size={20} />
+                  Settings
+                </button>
                 <button
                   onClick={handleLogout}
                   className="w-full py-4 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-rose-500/20 transition-all cursor-pointer"
