@@ -12,11 +12,15 @@ import type { RootState } from "../../store/store";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2, Mail, Lock, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
-const SumaLogo = "/images/SumaWhite.jpeg";
+// const SumaLogo = "/images/sumaLogo.png";
+const SumaLogo = "/images/SUMA_BlackLogo.svg"
 
 const SignUp: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  
   const dispatch = useDispatch();
   const { signupLoading } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
@@ -61,7 +65,7 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-[#020617] p-6 overflow-hidden">
+    <div className="min-h-screen relative flex items-center justify-center bg-[#f8fafc] p-6 overflow-hidden">
       {/* Background Mesh Gradients */}
       <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
       <div className="absolute top-[-10%] left-[10%] w-[40%] h-[40%] bg-brand-primary/10 blur-[120px] rounded-full" />
@@ -91,7 +95,7 @@ const SignUp: React.FC = () => {
             <img src={SumaLogo} alt="Suma Logo" className="h-12 w-auto mx-auto rounded-xl shadow-2xl" />
           </motion.div>
           <motion.h2 variants={itemVariants} className="text-3xl font-black mb-2">
-            <span className="text-white">Start your </span>
+            <span className="text-slate-950">Start your </span>
             <span className="text-gradient">Journey</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="text-slate-400 text-sm">
@@ -138,17 +142,24 @@ const SignUp: React.FC = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-300 ml-1">Password</label>
               <div className="relative group/input">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   {...register("password", { required: "Password is required" })}
-                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-4 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-12 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-brand-primary transition-colors focus:outline-none"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
               {errors.password && (
                 <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.password.message}</p>

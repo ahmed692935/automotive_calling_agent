@@ -32,8 +32,9 @@ const LandCard: React.FC<LandCardProps> = ({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover={{ 
         y: -10, 
-        backgroundColor: "rgba(30, 41, 59, 0.6)",
-        borderColor: "rgba(14, 165, 233, 0.4)"
+        backgroundColor: "rgba(255, 255, 255, 0.96)",
+        borderColor: "rgba(37, 99, 235, 0.28)",
+        boxShadow: "0 24px 60px rgba(15, 23, 42, 0.12)"
       }}
       className={`relative group glass rounded-[2rem] p-8 flex flex-col items-center text-center transition-all duration-300 ${className}`}
     >
@@ -68,7 +69,7 @@ const LandCard: React.FC<LandCardProps> = ({
         )}
 
         {subtitle && (
-          <h3 className="text-xl md:text-2xl font-bold mb-4 text-white leading-snug">
+          <h3 className="text-xl md:text-2xl font-bold mb-4 text-slate-950 leading-snug">
             {subtitle}
           </h3>
         )}
@@ -89,7 +90,7 @@ const LandCard: React.FC<LandCardProps> = ({
       </div>
       
       {/* Corner Accent */}
-      <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-slate-800 group-hover:bg-brand-primary transition-colors" />
+      <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-slate-200 group-hover:bg-brand-primary transition-colors" />
     </motion.div>
   );
 };

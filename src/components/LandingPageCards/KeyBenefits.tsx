@@ -43,7 +43,7 @@ function KeyBenefits() {
   ];
 
   return (
-    <section id="services" className="relative py-24 px-6 md:px-12 bg-[#020617]">
+    <section id="services" className="relative py-24 px-6 md:px-12 bg-[#f8fafc]">
       {/* Background Texture */}
       <div className="absolute inset-0 bg-gradient-mesh opacity-30" />
       
@@ -64,7 +64,7 @@ function KeyBenefits() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-3xl md:text-6xl font-black mt-6 text-white leading-[1.1]"
+            className="text-3xl md:text-6xl font-black mt-6 text-slate-950 leading-[1.1]"
           >
             Next-Gen Performance. <br />
             <span className="text-gradient">No Compromise.</span>

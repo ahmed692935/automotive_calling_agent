@@ -11,13 +11,13 @@ const CustomCursor = lazy(() => import("../components/CustomCursor.tsx"));
 
 function LandingPage() {
   return (
-    <div className="relative bg-[#020617] md:cursor-none">
+    <div className="relative bg-[#f8fafc] md:cursor-none">
       <Suspense fallback={null}>
         <CustomCursor />
       </Suspense>
 
       <section id="home">
-        <Suspense fallback={<div className="h-screen bg-[#020617]" />}>
+        <Suspense fallback={<div className="h-screen bg-[#f8fafc]" />}>
           <LandHeroSection />
         </Suspense>
       </section>

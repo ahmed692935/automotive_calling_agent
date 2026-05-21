@@ -8,11 +8,15 @@ import type { SignInData } from "../../interfaces/auth";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2, Mail, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
-const SumaLogo = "/images/SumaWhite.jpeg";
+// const SumaLogo = "/images/sumaLogo.png";
+const SumaLogo = "/images/SUMA_BlackLogo.svg"
 
 const SignIn: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  
   const {
     register,
     handleSubmit,
@@ -62,7 +66,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-[#020617] p-6 overflow-hidden">
+    <div className="min-h-screen relative flex items-center justify-center bg-[#f8fafc] p-6 overflow-hidden">
       {/* Background Mesh Gradients */}
       <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/10 blur-[120px] rounded-full" />
@@ -92,7 +96,7 @@ const SignIn: React.FC = () => {
             <img src={SumaLogo} alt="Suma Logo" className="h-12 w-auto mx-auto rounded-xl shadow-2xl" />
           </motion.div>
           <motion.h2 variants={itemVariants} className="text-3xl font-black mb-2">
-            <span className="text-white">Welcome </span>
+            <span className="text-slate-950">Welcome </span>
             <span className="text-gradient">Back</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="text-slate-400 text-sm">
@@ -122,7 +126,6 @@ const SignIn: React.FC = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <div className="flex items-center justify-between ml-1">
                 <label className="text-sm font-bold text-slate-300">Password</label>
@@ -131,18 +134,25 @@ const SignIn: React.FC = () => {
               <div className="relative group/input">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-primary transition-colors" size={18} />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   {...register("password", { required: "Password is required" })}
-                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-4 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
+                  className="w-full bg-slate-900/50 border border-slate-700/50 text-white pl-12 pr-12 py-3.5 rounded-2xl outline-none focus:border-brand-primary/50 focus:ring-4 focus:ring-brand-primary/10 transition-all placeholder:text-slate-600"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-brand-primary transition-colors focus:outline-none"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
               {errors.password && (
                 <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.password.message}</p>
               )}
             </div>
 
-            {/* Submit Button */}
             <motion.button
               type="submit"
               disabled={loginLoading}
@@ -161,9 +171,8 @@ const SignIn: React.FC = () => {
               )}
             </motion.button>
 
-            {/* Bottom text */}
             <p className="text-center text-slate-400 text-sm mt-8">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <button
                 type="button"
                 className="text-brand-primary font-bold hover:underline underline-offset-4"

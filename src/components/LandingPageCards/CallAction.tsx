@@ -21,7 +21,7 @@ function CallAction() {
   ];
 
   return (
-    <section className="relative py-24 px-6 md:px-12 bg-[#020617] overflow-hidden">
+    <section className="relative py-24 px-6 md:px-12 bg-[#f8fafc] overflow-hidden">
       {/* Background Accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-primary/5 blur-[150px] rounded-full pointer-events-none" />
 
@@ -42,7 +42,7 @@ function CallAction() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-5xl font-black text-white leading-tight"
+            className="text-3xl md:text-5xl font-black text-slate-950 leading-tight"
           >
             Making Every Interaction <br />
             <span className="text-gradient">Effortless.</span>
@@ -69,7 +69,7 @@ function CallAction() {
               title={item.title}
               value={item.value}
               desc={item.desc}
-              className="bg-slate-900/40 border-slate-800"
+              className="bg-white/80 border-slate-200"
             />
           ))}
         </div>

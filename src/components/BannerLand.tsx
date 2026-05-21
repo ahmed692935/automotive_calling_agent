@@ -33,7 +33,7 @@ function BannerLand() {
   };
 
   return (
-    <section className="py-24 px-6 md:px-12 bg-[#020617] overflow-hidden">
+    <section className="py-24 px-6 md:px-12 bg-[#f8fafc] overflow-hidden">
       <div className="max-w-7xl mx-auto w-full relative">
         {/* Main Banner Card */}
         <motion.div 
@@ -44,30 +44,30 @@ function BannerLand() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="relative w-full min-h-[400px] md:min-h-[500px] rounded-[3rem] overflow-hidden border border-slate-800/50 shadow-3xl flex flex-col items-center justify-center group cursor-none md:cursor-default"
+          className="relative w-full min-h-[400px] md:min-h-[500px] rounded-[3rem] overflow-hidden border border-slate-200 shadow-3xl flex flex-col items-center justify-center group cursor-none md:cursor-default"
         >
           {/* Animated Background Mesh */}
-          <div className="absolute inset-0 bg-[#020617]" />
+          <div className="absolute inset-0 bg-white" />
           <motion.div 
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3]
             }}
             transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 bg-gradient-mesh opacity-40 mix-blend-color-dodge"
+            className="absolute inset-0 bg-gradient-mesh opacity-70"
           />
 
           {/* Soundwave Image with Advanced Masking */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
             <img
               src={soundImg}
               alt="sound wave"
               loading="lazy"
-              className="w-full h-full object-cover mix-blend-screen scale-110"
+              className="w-full h-full object-cover scale-110"
             />
             {/* Vignette Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-[#020617]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-transparent to-[#020617]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white" />
           </div>
 
           {/* Core Content */}
@@ -112,7 +112,7 @@ function BannerLand() {
               whileInView={{ letterSpacing: "0.2em", opacity: 1, filter: "blur(0px)" }}
               transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="text-6xl md:text-9xl font-black text-white uppercase tracking-widest relative"
+              className="text-6xl md:text-9xl font-black text-slate-950 uppercase tracking-widest relative"
             >
               <span className="relative z-10">SUMA</span>
               {/* Ghost Glow Text */}
@@ -149,7 +149,7 @@ function BannerLand() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + (i * 0.1) }}
               viewport={{ once: true }}
-              className="glass border-slate-800/50 p-6 rounded-3xl text-center group hover:border-brand-primary/30 transition-colors"
+              className="glass border-slate-200 p-6 rounded-3xl text-center group hover:border-brand-primary/30 transition-colors"
             >
               <p className="text-2xl md:text-3xl font-black text-white mb-1 group-hover:text-brand-primary transition-colors">{stat.value}</p>
               <p className="text-[10px] uppercase tracking-widest font-black text-slate-500">{stat.label}</p>
